@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F2F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Privacy Policy"
+            android:textColor="#1A1A1A"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Last updated: January 1, 2025"
+            android:textColor="#9E9E9E"
+            android:textSize="13sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="16dp"
+            android:background="#E0E0E0" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="4dp"
+            android:text="1. Information We Collect\n\nEtech Pro does not collect personal information. We only use anonymized usage analytics to improve the app experience.\n\n2. Third-Party Advertising\n\nThis app uses Google AdMob to display advertisements. AdMob may collect device information and use cookies to serve personalized ads.\n\n3. Data Storage\n\nTech tips and app links are fetched from our server and are not stored on your device permanently.\n\n4. Internet Permission\n\nThis app requires internet access to load content and display advertisements.\n\n5. Children\'s Privacy\n\nThis app does not knowingly collect data from children under 13.\n\n6. Contact Us\n\nFor privacy concerns: support@etechpro.com"
+            android:textColor="#424242"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+</ScrollView>

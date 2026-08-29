@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorAccent">#2D5BE3</color>
+    <color name="colorBackground">#FFFFFF</color>
+    <color name="colorBlue">#2D5BE3</color>
+    <color name="colorCard">#F5F5F5</color>
+    <color name="colorDivider">#E0E0E0</color>
+    <color name="colorGray">#6B7280</color>
+    <color name="colorNavBar">#FFFFFF</color>
+    <color name="colorNavSelected">#000000</color>
+    <color name="colorNavUnselected">#888888</color>
+    <color name="colorPlayStore">#01875F</color>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#FFFFFF</color>
+    <color name="colorRed">#CC0000</color>
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorTextPrimary">#000000</color>
+    <color name="colorTextSecondary">#222222</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <string name="about_description">TechApp is your go-to resource for the latest tech tips, tutorials, and app recommendations.</string>
+    <string name="app_name">Etech Pro</string>
+    <string name="btn_get_app">Get App</string>
+    <string name="btn_send_email">Send Email</string>
+    <string name="contact_email">support@techapp.com</string>
+    <string name="featured_apps_header">Featured Apps</string>
+    <string name="loading_error">Failed to load content. Please check your connection.</string>
+    <string name="reward_earned">You\'ve unlocked bonus content!</string>
+    <string name="reward_loading">Bonus content loading, please try again.</string>
+    <string name="search_hint">Search apps...</string>
+    <string name="tech_tips_header">Tech Tips</string>
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+    </style>
+    <style name="CardStyle">
+        <item name="android:layout_marginStart">12dp</item>
+        <item name="android:layout_marginEnd">12dp</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+    </style>
+    <style name="SectionHeader">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:padding">12dp</item>
+    </style>
+    <style name="Theme.TechApp" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:navigationBarColor">@color/colorNavBar</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

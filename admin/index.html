@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etech Pro Admin Panel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f1117;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: #1a1f2e;
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #2d5be3;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            color: #2d5be3;
+            font-weight: 700;
+        }
+
+        .header span {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* Server URL bar */
+        .server-bar {
+            background: #1a1f2e;
+            padding: 12px 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #2a3040;
+        }
+
+        .server-bar label { font-size: 13px; color: #9ba3b8; }
+
+        .server-bar input {
+            flex: 1;
+            max-width: 300px;
+            padding: 8px 12px;
+            background: #0f1117;
+            border: 1px solid #2a3040;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        .server-bar button {
+            padding: 8px 16px;
+            background: #2d5be3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #6b7280;
+        }
+
+        .status-dot.online { background: #22c55e; }
+        .status-dot.offline { background: #ef4444; }
+
+        /* Main Layout */
+        .container { display: flex; height: calc(100vh - 105px); }
+
+        /* Sidebar */
+        .sidebar {
+            width: 200px;
+            background: #1a1f2e;
+            border-right: 1px solid #2a3040;
+            padding: 16px 0;
+            flex-shrink: 0;
+        }
+
+        .sidebar-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #9ba3b8;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-item:hover { background: #222836; color: #e2e8f0; }
+        .sidebar-item.active {
+            background: #222836;
+            color: #2d5be3;
+            border-left-color: #2d5be3;
+        }
+
+        /* Content */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 32px;
+        }
+
+        /* Page title */
+        .page-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .page-title h2 { font-size: 20px; color: #e2e8f0; }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover { opacity: 0.85; }
+        .btn-primary { background: #2d5be3; color: white; }
+        .btn-danger  { background: #ef4444; color: white; padding: 6px 12px; font-size: 12px; }
+        .btn-edit    { background: #f59e0b; color: white; padding: 6px 12px; font-size: 12px; }
+        .btn-sm      { padding: 6px 12px; font-size: 12px; }
+
+        /* Table */
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead tr { background: #222836; }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            color: #9ba3b8;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #2a3040;
+            vertical-align: middle;
+        }
+
+        tr:hover td { background: #1a1f2e; }
+
+        .tip-id {
+            background: #2d5be3;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .tip-title { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .tip-desc  { max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #9ba3b8; }
+
+        .tip-img {
+            width: 60px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+            background: #222836;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: #1a1f2e;
+            border-radius: 12px;
+            padding: 24px;
+            width: 540px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid #2a3040;
+        }
+
+        .modal h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #e2e8f0;
+        }
+
+        .form-group { margin-bottom: 16px; }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #9ba3b8;
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: #0f1117;
+            border: 1px solid #2a3040;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea { resize: vertical; min-height: 100px; }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2d5be3;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            background: #2a3040;
+            color: #e2e8f0;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: white;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .toast.show { opacity: 1; }
+        .toast.success { background: #22c55e; }
+        .toast.error   { background: #ef4444; }
+
+        /* Stats cards */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #1a1f2e;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #2a3040;
+        }
+
+        .stat-card .num {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d5be3;
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: #9ba3b8;
+            margin-top: 4px;
+        }
+
+        /* Empty state */
+        .empty {
+            text-align: center;
+            padding: 48px;
+            color: #6b7280;
+        }
+
+        .empty p { margin-top: 8px; font-size: 14px; }
+
+        /* Loading */
+        .loading { text-align: center; padding: 48px; color: #6b7280; }
+
+        /* Hidden */
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <h1>⚡ Etech Pro Admin</h1>
+    <span id="serverLabel">localhost:8080</span>
+</div>
+
+<!-- Server Bar -->
+<div class="server-bar">
+    <label>Server:</label>
+    <input type="text" id="serverUrl" value="http://localhost:8080" placeholder="http://localhost:8080" />
+    <button onclick="connectServer()">Connect</button>
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText" style="font-size:13px;color:#6b7280;">Not connected</span>
+</div>
+
+<!-- Main -->
+<div class="container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-item active" onclick="showPage('dashboard')">📊 Dashboard</div>
+        <div class="sidebar-item" onclick="showPage('techtips')">💡 Tech Tips</div>
+        <div class="sidebar-item" onclick="showPage('applinks')">🔗 App Links</div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+        <!-- Dashboard Page -->
+        <div id="page-dashboard">
+            <div class="page-title">
+                <h2>Dashboard</h2>
+            </div>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="num" id="stat-tips">-</div>
+                    <div class="label">Tech Tips</div>
+                </div>
+                <div class="stat-card">
+                    <div class="num" id="stat-links">-</div>
+                    <div class="label">App Links</div>
+                </div>
+            </div>
+            <div style="background:#1a1f2e;border-radius:12px;padding:20px;border:1px solid #2a3040;">
+                <p style="color:#9ba3b8;font-size:14px;line-height:1.8;">
+                    Welcome to <strong style="color:#2d5be3;">Etech Pro Admin Panel</strong>.<br>
+                    Use the sidebar to manage your tech tips and app links.<br>
+                    Make sure your Spring Boot backend is running before connecting.
+                </p>
+            </div>
+        </div>
+
+        <!-- Tech Tips Page -->
+        <div id="page-techtips" class="hidden">
+            <div class="page-title">
+                <h2>Tech Tips</h2>
+                <button class="btn btn-primary" onclick="openTipModal()">+ Add New Tip</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Image</th>
+                            <th>Title</th>
+                            <th>Tag</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tips-tbody">
+                        <tr><td colspan="6" class="loading">Connect to server to load tips...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- App Links Page -->
+        <div id="page-applinks" class="hidden">
+            <div class="page-title">
+                <h2>App Links</h2>
+                <button class="btn btn-primary" onclick="openLinkModal()">+ Add New Link</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Play Store URL</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="links-tbody">
+                        <tr><td colspan="4" class="loading">Connect to server to load links...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Add/Edit Tip Modal -->
+<div class="modal-overlay" id="tipModal">
+    <div class="modal">
+        <h3 id="tipModalTitle">Add New Tech Tip</h3>
+        <input type="hidden" id="tipId" />
+        <div class="form-group">
+            <label>Title *</label>
+            <input type="text" id="tipTitle" placeholder="Enter title (supports Amharic አማርኛ)" />
+        </div>
+        <div class="form-group">
+            <label>Description *</label>
+            <textarea id="tipDescription" placeholder="Enter description (supports Amharic አማርኛ)"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Image</label>
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+                <button type="button" onclick="document.getElementById('imageFileInput').click()"
+                    style="padding:8px 14px;background:#2a3040;color:#e2e8f0;border:none;border-radius:8px;cursor:pointer;font-size:13px;">
+                    📁 Upload from PC/Phone
+                </button>
+                <span style="color:#6b7280;font-size:13px;">or paste URL below</span>
+            </div>
+            <input type="file" id="imageFileInput" accept="image/*"
+                style="display:none;" onchange="handleImageUpload(this)" />
+            <div id="uploadProgress" style="display:none;font-size:13px;color:#2d5be3;margin-bottom:6px;">
+                ⏳ Uploading...
+            </div>
+            <div id="imagePreviewWrap" style="display:none;margin-bottom:8px;">
+                <img id="imagePreview" style="max-height:120px;border-radius:8px;border:1px solid #2a3040;" />
+            </div>
+            <input type="text" id="tipImageUrl" placeholder="https://example.com/image.jpg" />
+        </div>
+        <div class="form-group">
+            <label>Video Link (YouTube)</label>
+            <input type="text" id="tipVideoLink" placeholder="https://www.youtube.com/watch?v=..." />
+        </div>
+        <div class="form-group">
+            <label>Search Tag (unique name for search e.g. b12, grade12)</label>
+            <input type="text" id="tipTag" placeholder="e.g. b12, grade12, tiktok" />
+        </div>
+        <div class="form-group">
+            <label>Website / Play Store URL</label>
+            <input type="text" id="tipWebsiteUrl" placeholder="https://play.google.com/store/..." />
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeTipModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveTip()">Save Tip</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit App Link Modal -->
+<div class="modal-overlay" id="linkModal">
+    <div class="modal">
+        <h3 id="linkModalTitle">Add New App Link</h3>
+        <input type="hidden" id="linkId" />
+        <div class="form-group">
+            <label>App Name *</label>
+            <input type="text" id="linkName" placeholder="e.g. WhatsApp" />
+        </div>
+        <div class="form-group">
+            <label>Play Store URL *</label>
+            <input type="text" id="linkUrl" placeholder="https://play.google.com/store/apps/details?id=..." />
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeLinkModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveLink()">Save Link</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+    let BASE_URL = 'http://localhost:8080';
+
+    // ── Server Connection ─────────────────────────────────────────
+
+    async function connectServer() {
+        BASE_URL = document.getElementById('serverUrl').value.trim().replace(/\/$/, '');
+        document.getElementById('serverLabel').textContent = BASE_URL;
+
+        try {
+            const res = await fetch(`${BASE_URL}/api/techtips`);
+            if (res.ok) {
+                setStatus(true);
+                showToast('Connected successfully!', 'success');
+                loadDashboard();
+                loadTips();
+                loadLinks();
+            } else {
+                setStatus(false);
+                showToast('Server responded with error', 'error');
+            }
+        } catch (e) {
+            setStatus(false);
+            showToast('Cannot connect to server. Is it running?', 'error');
+        }
+    }
+
+    function setStatus(online) {
+        const dot  = document.getElementById('statusDot');
+        const text = document.getElementById('statusText');
+        dot.className  = 'status-dot ' + (online ? 'online' : 'offline');
+        text.textContent = online ? 'Connected' : 'Disconnected';
+        text.style.color = online ? '#22c55e' : '#ef4444';
+    }
+
+    // ── Pages ─────────────────────────────────────────────────────
+
+    function showPage(page) {
+        ['dashboard','techtips','applinks'].forEach(p => {
+            document.getElementById('page-' + p).classList.add('hidden');
+        });
+        document.getElementById('page-' + page).classList.remove('hidden');
+        document.querySelectorAll('.sidebar-item').forEach((el, i) => {
+            el.classList.remove('active');
+        });
+        const items = document.querySelectorAll('.sidebar-item');
+        const map = {dashboard:0, techtips:1, applinks:2};
+        items[map[page]].classList.add('active');
+    }
+
+    // ── Dashboard ─────────────────────────────────────────────────
+
+    async function loadDashboard() {
+        try {
+            const [tipsRes, linksRes] = await Promise.all([
+                fetch(`${BASE_URL}/api/techtips`),
+                fetch(`${BASE_URL}/api/applinks`)
+            ]);
+            const tips  = await tipsRes.json();
+            const links = await linksRes.json();
+            document.getElementById('stat-tips').textContent  = tips.length;
+            document.getElementById('stat-links').textContent = links.length;
+        } catch(e) {}
+    }
+
+    // ── Tech Tips ─────────────────────────────────────────────────
+
+    async function loadTips() {
+        const tbody = document.getElementById('tips-tbody');
+        tbody.innerHTML = '<tr><td colspan="6" class="loading">Loading...</td></tr>';
+        try {
+            const res  = await fetch(`${BASE_URL}/api/techtips`);
+            const tips = await res.json();
+
+            if (tips.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty"><p>No tips yet. Add your first tip!</p></td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = tips.map(tip => `
+                <tr>
+                    <td><span class="tip-id">${tip.id}</span></td>
+                    <td>${tip.imageUrl ? `<img class="tip-img" src="${tip.imageUrl}" onerror="this.style.display='none'">` : '-'}</td>
+                    <td class="tip-title" title="${tip.title}">${tip.title}</td>
+                    <td>${tip.tag ? `<span style="background:#2d5be3;color:white;padding:2px 8px;border-radius:4px;font-size:12px;">${tip.tag}</span>` : '-'}</td>
+                    <td class="tip-desc"  title="${tip.description}">${tip.description || '-'}</td>
+                    <td style="font-size:12px;color:#6b7280;">${formatDate(tip.createdAt)}</td>
+                    <td>
+                        <button class="btn btn-edit" onclick="editTip(${tip.id})">✏️ Edit</button>
+                        <button class="btn btn-danger" onclick="deleteTip(${tip.id})" style="margin-left:6px;">🗑️ Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch(e) {
+            tbody.innerHTML = '<tr><td colspan="6" class="empty"><p>Failed to load tips.</p></td></tr>';
+        }
+    }
+
+    function openTipModal(tip) {
+        document.getElementById('tipModalTitle').textContent = 'Add New Tech Tip';
+        document.getElementById('tipId').value          = '';
+        document.getElementById('tipTitle').value       = '';
+        document.getElementById('tipDescription').value = '';
+        document.getElementById('tipImageUrl').value    = '';
+        document.getElementById('tipVideoLink').value   = '';
+        document.getElementById('tipWebsiteUrl').value  = '';
+        document.getElementById('tipTag').value         = '';
+        document.getElementById('imagePreviewWrap').style.display = 'none';
+        document.getElementById('tipModal').classList.add('open');
+    }
+
+    async function editTip(id) {
+        try {
+            const res = await fetch(`${BASE_URL}/api/techtips/${id}`);
+            const tip = await res.json();
+            document.getElementById('tipModalTitle').textContent  = 'Edit Tech Tip';
+            document.getElementById('tipId').value          = tip.id;
+            document.getElementById('tipTitle').value       = tip.title || '';
+            document.getElementById('tipDescription').value = tip.description || '';
+            document.getElementById('tipImageUrl').value    = tip.imageUrl || '';
+            document.getElementById('tipVideoLink').value   = tip.videoLink || '';
+            document.getElementById('tipWebsiteUrl').value  = tip.websiteUrl || '';
+            document.getElementById('tipTag').value         = tip.tag || '';
+            // Show image preview if exists
+            if (tip.imageUrl) {
+                document.getElementById('imagePreview').src = tip.imageUrl;
+                document.getElementById('imagePreviewWrap').style.display = 'block';
+            } else {
+                document.getElementById('imagePreviewWrap').style.display = 'none';
+            }
+            document.getElementById('tipModal').classList.add('open');
+        } catch(e) {
+            showToast('Failed to load tip', 'error');
+        }
+    }
+
+    function closeTipModal() {
+        document.getElementById('tipModal').classList.remove('open');
+    }
+
+    async function saveTip() {
+        const id          = document.getElementById('tipId').value;
+        const title       = document.getElementById('tipTitle').value.trim();
+        const description = document.getElementById('tipDescription').value.trim();
+        const imageUrl    = document.getElementById('tipImageUrl').value.trim();
+        const videoLink   = document.getElementById('tipVideoLink').value.trim();
+        const websiteUrl  = document.getElementById('tipWebsiteUrl').value.trim();
+
+        const tag         = document.getElementById('tipTag').value.trim();
+
+        if (!title || !description) {
+            showToast('Title and description are required', 'error');
+            return;
+        }
+
+        const body = { title, description, imageUrl, videoLink, websiteUrl, tag };
+        const url    = id ? `${BASE_URL}/api/techtips/${id}` : `${BASE_URL}/api/techtips`;
+        const method = id ? 'PUT' : 'POST';
+
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json; charset=utf-8' },
+                body: JSON.stringify(body)
+            });
+
+            if (res.ok) {
+                showToast(id ? 'Tip updated!' : 'Tip added!', 'success');
+                closeTipModal();
+                loadTips();
+                loadDashboard();
+            } else {
+                showToast('Failed to save tip', 'error');
+            }
+        } catch(e) {
+            showToast('Error connecting to server', 'error');
+        }
+    }
+
+    async function deleteTip(id) {
+        if (!confirm('Delete this tip? This cannot be undone.')) return;
+        try {
+            const res = await fetch(`${BASE_URL}/api/techtips/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                showToast('Tip deleted!', 'success');
+                loadTips();
+                loadDashboard();
+            } else {
+                showToast('Failed to delete tip', 'error');
+            }
+        } catch(e) {
+            showToast('Error connecting to server', 'error');
+        }
+    }
+
+    // ── App Links ─────────────────────────────────────────────────
+
+    async function loadLinks() {
+        const tbody = document.getElementById('links-tbody');
+        tbody.innerHTML = '<tr><td colspan="4" class="loading">Loading...</td></tr>';
+        try {
+            const res   = await fetch(`${BASE_URL}/api/applinks`);
+            const links = await res.json();
+
+            if (links.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="empty"><p>No app links yet.</p></td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = links.map(link => `
+                <tr>
+                    <td><span class="tip-id">${link.id}</span></td>
+                    <td>${link.name}</td>
+                    <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#9ba3b8;">
+                        <a href="${link.playstoreUrl}" target="_blank" style="color:#2d5be3;">${link.playstoreUrl}</a>
+                    </td>
+                    <td>
+                        <button class="btn btn-edit" onclick="editLink(${link.id})">✏️ Edit</button>
+                        <button class="btn btn-danger" onclick="deleteLink(${link.id})" style="margin-left:6px;">🗑️ Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch(e) {
+            tbody.innerHTML = '<tr><td colspan="4" class="empty"><p>Failed to load links.</p></td></tr>';
+        }
+    }
+
+    function openLinkModal() {
+        document.getElementById('linkModalTitle').textContent = 'Add New App Link';
+        document.getElementById('linkId').value   = '';
+        document.getElementById('linkName').value = '';
+        document.getElementById('linkUrl').value  = '';
+        document.getElementById('linkModal').classList.add('open');
+    }
+
+    async function editLink(id) {
+        try {
+            const res  = await fetch(`${BASE_URL}/api/applinks/${id}`);
+            const link = await res.json();
+            document.getElementById('linkModalTitle').textContent = 'Edit App Link';
+            document.getElementById('linkId').value   = link.id;
+            document.getElementById('linkName').value = link.name || '';
+            document.getElementById('linkUrl').value  = link.playstoreUrl || '';
+            document.getElementById('linkModal').classList.add('open');
+        } catch(e) {
+            showToast('Failed to load link', 'error');
+        }
+    }
+
+    function closeLinkModal() {
+        document.getElementById('linkModal').classList.remove('open');
+    }
+
+    async function saveLink() {
+        const id   = document.getElementById('linkId').value;
+        const name = document.getElementById('linkName').value.trim();
+        const url  = document.getElementById('linkUrl').value.trim();
+
+        if (!name || !url) {
+            showToast('Name and URL are required', 'error');
+            return;
+        }
+
+        const body   = { name, playstoreUrl: url };
+        const apiUrl = id ? `${BASE_URL}/api/applinks/${id}` : `${BASE_URL}/api/applinks`;
+        const method = id ? 'PUT' : 'POST';
+
+        try {
+            const res = await fetch(apiUrl, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            if (res.ok) {
+                showToast(id ? 'Link updated!' : 'Link added!', 'success');
+                closeLinkModal();
+                loadLinks();
+                loadDashboard();
+            } else {
+                showToast('Failed to save link', 'error');
+            }
+        } catch(e) {
+            showToast('Error connecting to server', 'error');
+        }
+    }
+
+    async function deleteLink(id) {
+        if (!confirm('Delete this app link?')) return;
+        try {
+            const res = await fetch(`${BASE_URL}/api/applinks/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                showToast('Link deleted!', 'success');
+                loadLinks();
+                loadDashboard();
+            } else {
+                showToast('Failed to delete link', 'error');
+            }
+        } catch(e) {
+            showToast('Error connecting to server', 'error');
+        }
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────
+
+    function formatDate(dt) {
+        if (!dt) return '-';
+        try {
+            return new Date(dt).toLocaleDateString('en-US', {
+                year: 'numeric', month: 'short', day: 'numeric'
+            });
+        } catch(e) { return dt; }
+    }
+
+    function showToast(msg, type) {
+        const toast = document.getElementById('toast');
+        toast.textContent  = msg;
+        toast.className    = `toast ${type} show`;
+        setTimeout(() => toast.className = 'toast', 3000);
+    }
+
+    // ── Image Upload ──────────────────────────────────────────────
+
+    async function handleImageUpload(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        // Show preview immediately
+        const reader = new FileReader();
+        reader.onload = e => {
+            document.getElementById('imagePreview').src = e.target.result;
+            document.getElementById('imagePreviewWrap').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+
+        // Upload to server
+        document.getElementById('uploadProgress').style.display = 'block';
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res  = await fetch(`${BASE_URL}/api/upload/image`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+
+            document.getElementById('uploadProgress').style.display = 'none';
+
+            if (data.url) {
+                document.getElementById('tipImageUrl').value = data.url;
+                showToast('Image uploaded successfully!', 'success');
+            } else {
+                showToast(data.error || 'Upload failed', 'error');
+            }
+        } catch(e) {
+            document.getElementById('uploadProgress').style.display = 'none';
+            showToast('Failed to upload image', 'error');
+        }
+    }
+
+    // Close modals on overlay click
+    document.getElementById('tipModal').addEventListener('click', function(e) {
+        if (e.target === this) closeTipModal();
+    });
+    document.getElementById('linkModal').addEventListener('click', function(e) {
+        if (e.target === this) closeLinkModal();
+    });
+
+    // Auto connect on load
+    connectServer();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+# Android
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+android/**/*.iml
+android/.idea/
+android/captures/
+android/.externalNativeBuild/
+android/.cxx/
+
+# Spring Boot
+backend/target/
+backend/*.jar
+backend/*.war
+
+# IntelliJ / Android Studio
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Uploads folder — contains user uploaded images
+uploads/
+
+# Environment / secrets
+*.env
+application-prod.properties

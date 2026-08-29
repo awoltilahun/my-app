@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:name=".EtechProApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="Etech Pro"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TechApp"
+        android:usesCleartextTraffic="true">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713" />
+
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true"
+            android:label="Etech Pro">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:exported="false"
+            android:label="Settings"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
+            android:name=".ui.DetailActivity"
+            android:exported="false"
+            android:label="Detail"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
+            android:name=".ui.CategoryActivity"
+            android:exported="false"
+            android:label="Categories"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
+            android:name=".ui.PlayActivity"
+            android:exported="false"
+            android:label="Play Videos"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
+            android:name=".ui.SavedActivity"
+            android:exported="false"
+            android:label="Saved Apps"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
+            android:name=".ui.AboutActivity"
+            android:exported="false"
+            android:label="About"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
+            android:name=".ui.PrivacyPolicyActivity"
+            android:exported="false"
+            android:label="Privacy Policy"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
+            android:name=".ui.ContactActivity"
+            android:exported="false"
+            android:label="Contact Us"
+            android:parentActivityName=".ui.MainActivity" />
+
+    </application>
+
+</manifest>

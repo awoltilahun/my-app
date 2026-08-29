@@ -29,7 +29,8 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginVertical="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             android:background="@color/colorDivider" />
 
         <androidx.cardview.widget.CardView
@@ -46,6 +47,7 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
+                <!-- Intro -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -54,6 +56,7 @@
                     android:textSize="14sp"
                     android:text="This app is provided free of charge and is intended for use as is. By installing and using the app, you agree to the collection and use of information described in this policy." />
 
+                <!-- Information Collection -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -72,6 +75,7 @@
                     android:textSize="14sp"
                     android:text="The app may use third-party services (such as Google AdMob, Firebase Cloud Messaging, or OneSignal) that collect information used to identify you, including device identifiers, IP address, and usage statistics." />
 
+                <!-- Log Data -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -90,6 +94,7 @@
                     android:textSize="14sp"
                     android:text="In case of an error, the app collects data through third-party products called Log Data. This may include your device\'s IP address, device name, operating system version, app configuration, time and date of use, and other statistics." />
 
+                <!-- Cookies -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -108,6 +113,7 @@
                     android:textSize="14sp"
                     android:text="The app itself does not use cookies. However, third-party SDKs may use cookies to improve their services. You can choose to accept or refuse cookies, but refusing may limit functionality." />
 
+                <!-- Service Providers -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -124,8 +130,9 @@
                     android:lineSpacingExtra="6dp"
                     android:textColor="@color/colorTextPrimary"
                     android:textSize="14sp"
-                    android:text="We may employ third-party companies and individuals to facilitate our Service, provide the Service on our behalf, perform Service-related tasks, or assist in analyzing app usage. These third parties have access to your information only to perform assigned tasks and are obligated not to disclose or use it for other purposes." />
+                    android:text="We may employ third-party companies and individuals to:\n\n• Facilitate our Service\n• Provide the Service on our behalf\n• Perform Service-related tasks\n• Assist in analyzing app usage\n\nThese third parties have access to your information only to perform assigned tasks and are obligated not to disclose or use it for other purposes." />
 
+                <!-- Notifications -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -144,6 +151,7 @@
                     android:textSize="14sp"
                     android:text="The app may send push notifications using services such as Firebase Cloud Messaging or OneSignal. These services may collect device identifiers to deliver notifications. You can disable notifications at any time in your device settings." />
 
+                <!-- Security -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -162,6 +170,7 @@
                     android:textSize="14sp"
                     android:text="We value your trust and strive to use commercially acceptable means to protect your information. However, no method of transmission or storage is 100% secure." />
 
+                <!-- Links -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -180,6 +189,7 @@
                     android:textSize="14sp"
                     android:text="This app may contain links to external sites. We are not responsible for their content or privacy practices. Please review their policies separately." />
 
+                <!-- Children -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -198,6 +208,7 @@
                     android:textSize="14sp"
                     android:text="This app does not target children under 13. We do not knowingly collect information from children. If such data is discovered, it will be deleted immediately." />
 
+                <!-- Changes -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -216,6 +227,7 @@
                     android:textSize="14sp"
                     android:text="We may update this Privacy Policy from time to time. Changes will be posted within the app or on the hosting page." />
 
+                <!-- Contact -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -229,10 +241,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
+                    android:layout_marginBottom="8dp"
                     android:lineSpacingExtra="6dp"
                     android:textColor="@color/colorTextPrimary"
                     android:textSize="14sp"
-                    android:text="If you have questions or concerns, contact us at: techappsupport@gmail.com" />
+                    android:text="If you have questions or concerns, contact us at: etechsupport2@gmail.com" />
 
             </LinearLayout>
 

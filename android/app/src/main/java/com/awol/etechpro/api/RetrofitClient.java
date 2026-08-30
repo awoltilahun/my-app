@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 public class RetrofitClient {
 
     // Updated IP — change this every time your hotspot IP changes
-    private static final String BASE_URL = "http://10.194.231.18:8080/";
+    private static final String BASE_URL = "https://my-app-production-fb6d.up.railway.app/";
 
     private static Retrofit retrofit = null;
     private static ApiService apiService = null;

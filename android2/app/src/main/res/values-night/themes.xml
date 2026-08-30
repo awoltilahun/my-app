@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.TechApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#1A1F2E</item>
+        <item name="colorPrimaryDark">#12161F</item>
+        <item name="colorAccent">#2D5BE3</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:statusBarColor">#12161F</item>
+        <item name="android:navigationBarColor">@color/colorNavBar</item>
+    </style>
+</resources>

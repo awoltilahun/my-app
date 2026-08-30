@@ -5,27 +5,6 @@
     android:orientation="vertical"
     android:background="@color/colorBackground">
 
-    <!-- Header -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@color/colorSurface"
-        android:gravity="center_vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:elevation="4dp">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Settings"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:gravity="center" />
-
-    </LinearLayout>
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -36,7 +15,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Appearance Section -->
+            <!-- APPEARANCE -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -47,15 +26,15 @@
                 android:letterSpacing="0.1"
                 android:paddingBottom="8dp" />
 
-            <!-- Dark Mode Toggle -->
+            <!-- Dark Mode -->
             <androidx.cardview.widget.CardView
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="?attr/colorSurface">
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/colorSurface">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -83,7 +62,7 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- General Section -->
+            <!-- GENERAL -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -102,8 +81,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="?attr/colorSurface">
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/colorSurface">
 
                 <LinearLayout
                     android:id="@+id/btn_about"
@@ -140,8 +119,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="?attr/colorSurface">
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/colorSurface">
 
                 <LinearLayout
                     android:id="@+id/btn_privacy"
@@ -178,8 +157,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="?attr/colorSurface">
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/colorSurface">
 
                 <LinearLayout
                     android:id="@+id/btn_contact"
@@ -209,11 +188,187 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- App Version -->
+            <!-- PUBLISHER INFORMATION -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:text="PUBLISHER INFORMATION"
+                android:textColor="@color/colorBlue"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp" />
+
+            <!-- Publisher Button -->
+            <androidx.cardview.widget.CardView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Tap to expand button -->
+                    <LinearLayout
+                        android:id="@+id/btn_publisher"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Publisher Information"
+                            android:textColor="@color/colorTextPrimary"
+                            android:textSize="16sp" />
+
+                        <ImageView
+                            android:id="@+id/iv_publisher_arrow"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/arrow_down_float" />
+
+                    </LinearLayout>
+
+                    <!-- Expandable Content — hidden by default -->
+                    <LinearLayout
+                        android:id="@+id/layout_publisher_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="16dp"
+                        android:visibility="gone">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/colorDivider"
+                            android:layout_marginBottom="12dp" />
+
+                        <!-- Publisher Name -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingBottom="10dp">
+
+                            <TextView
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:text="Publisher"
+                                android:textColor="@color/colorGray"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Abdi Technology"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <!-- Company -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingBottom="10dp">
+
+                            <TextView
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:text="Company"
+                                android:textColor="@color/colorGray"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Abdi Technology"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <!-- Email -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingBottom="10dp">
+
+                            <TextView
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:text="Email"
+                                android:textColor="@color/colorGray"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="etechsupport2@gmail.com"
+                                android:textColor="@color/colorBlue"
+                                android:textSize="14sp" />
+
+                        </LinearLayout>
+
+                        <!-- Address -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:text="Address"
+                                android:textColor="@color/colorGray"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Ethiopia"
+                                android:textColor="@color/colorTextPrimary"
+                                android:textSize="14sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Version -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
                 android:text="Etech Pro v1.0.0"
                 android:textColor="@color/colorGray"
                 android:textSize="13sp"

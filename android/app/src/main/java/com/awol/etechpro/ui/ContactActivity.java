@@ -23,7 +23,7 @@ public class ContactActivity extends AppCompatActivity {
         Button btnSendEmail = findViewById(R.id.btn_send_email);
         btnSendEmail.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_SENDTO);
-            intent.setData(Uri.parse("mailto:support@etechpro.com"));
+            intent.setData(Uri.parse("mailto:etechsupport2@gmail.com"));
             intent.putExtra(Intent.EXTRA_SUBJECT, "Etech Pro Support Request");
             startActivity(Intent.createChooser(intent, "Send email"));
         });

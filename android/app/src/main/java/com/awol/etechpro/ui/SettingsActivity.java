@@ -62,6 +62,21 @@ public class SettingsActivity extends AppCompatActivity {
         LinearLayout btnContact = findViewById(R.id.btn_contact);
         btnContact.setOnClickListener(v ->
             startActivity(new Intent(this, ContactActivity.class)));
+
+        // Publisher Information expand/collapse
+        LinearLayout btnPublisher = findViewById(R.id.btn_publisher);
+        LinearLayout layoutPublisherInfo = findViewById(R.id.layout_publisher_info);
+        android.widget.ImageView ivArrow = findViewById(R.id.iv_publisher_arrow);
+
+        btnPublisher.setOnClickListener(v -> {
+            if (layoutPublisherInfo.getVisibility() == android.view.View.GONE) {
+                layoutPublisherInfo.setVisibility(android.view.View.VISIBLE);
+                ivArrow.setImageResource(android.R.drawable.arrow_up_float);
+            } else {
+                layoutPublisherInfo.setVisibility(android.view.View.GONE);
+                ivArrow.setImageResource(android.R.drawable.arrow_down_float);
+            }
+        });
     }
 
     public static void applyTheme(SharedPreferences prefs) {

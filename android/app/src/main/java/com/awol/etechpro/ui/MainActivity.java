@@ -1,7 +1,11 @@
 package com.awol.etechpro.ui;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -12,26 +16,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
-import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.awol.etechpro.R;
 import com.awol.etechpro.adapter.TechTipAdapter;
 import com.awol.etechpro.api.RetrofitClient;
@@ -47,10 +43,10 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    private static final int NOTIFICATION_PERMISSION_CODE = 100;
 
     private RecyclerView rvTechTips;
     private EditText etSearch;
-    private AdView bannerAdView;
     private ScrollView scrollContent;
     private LinearLayout layoutOffline, layoutLoading;
     private Button btnRetry;
@@ -60,41 +56,74 @@ public class MainActivity extends AppCompatActivity {
     private TechTipAdapter techTipAdapter;
     private List<TechTip> techTipList = new ArrayList<>();
 
-    private InterstitialAd mInterstitialAd;
-    private RewardedAd mRewardedAd;
-
-    private static final String BANNER_AD_UNIT_ID       = "ca-app-pub-3940256099942544/6300978111";
-    private static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
-    private static final String REWARDED_AD_UNIT_ID     = "ca-app-pub-3940256099942544/5224354917";
+    private Handler refreshHandler = new Handler();
+    private Runnable refreshRunnable = new Runnable() {
+        @Override
+        public void run() {
+            fetchTechTips();
+            refreshHandler.postDelayed(this, 30000);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        MobileAds.initialize(this, status -> Log.d(TAG, "AdMob initialized"));
+        String searchQuery = getIntent().getStringExtra("search_query");
 
-        // Setup toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Etech Pro");
-        }
+        // No toolbar — using custom search bar with icon popup menu
 
         initViews();
         setupRecyclerView();
         setupSearchBar();
         setupBottomNav();
-        loadBannerAd();
-        loadInterstitialAd();
-        loadRewardedAd();
-        loadData();
+
+        // Request notification permission on first launch
+        requestNotificationPermission();
+
+        if (searchQuery != null && !searchQuery.isEmpty()) {
+            etSearch.setText(searchQuery);
+            searchTechTips(searchQuery);
+        } else {
+            loadData();
+        }
     }
+
+    // ── Notification Permission ───────────────────────────────────
+
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Show system dialog asking user to allow notifications
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        NOTIFICATION_PERMISSION_CODE);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+            String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == NOTIFICATION_PERMISSION_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Notifications enabled!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Notifications disabled. You can enable them in Settings.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    // ── Views ─────────────────────────────────────────────────────
 
     private void initViews() {
         rvTechTips    = findViewById(R.id.rv_tech_tips);
         etSearch      = findViewById(R.id.et_search);
-        bannerAdView  = findViewById(R.id.banner_ad_view);
         scrollContent = findViewById(R.id.scroll_content);
         layoutOffline = findViewById(R.id.layout_offline);
         layoutLoading = findViewById(R.id.layout_loading);
@@ -107,39 +136,38 @@ public class MainActivity extends AppCompatActivity {
 
         btnRetry.setOnClickListener(v -> loadData());
 
-        // Pull to refresh
-        swipeRefresh.setColorSchemeColors(
-            getResources().getColor(R.color.colorBlue));
-        swipeRefresh.setOnRefreshListener(() -> fetchTechTips());
+        // Close search when user presses back on keyboard
+        etSearch.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) {
+                String query = etSearch.getText().toString().trim();
+                if (query.isEmpty()) loadData();
+                // Hide keyboard
+                android.view.inputmethod.InputMethodManager imm =
+                    (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+                etSearch.clearFocus();
+            }
+            return false;
+        });
+
+        swipeRefresh.setColorSchemeColors(getResources().getColor(R.color.colorBlue));
+        swipeRefresh.setOnRefreshListener(this::fetchTechTips);
 
         // App icon popup menu
         ImageView ivAppIcon = findViewById(R.id.iv_app_icon);
         ivAppIcon.setOnClickListener(v -> {
-            android.widget.PopupMenu popup = new android.widget.PopupMenu(this, v);
+            PopupMenu popup = new PopupMenu(this, v);
             popup.getMenu().add(0, 1, 0, "Settings");
             popup.getMenu().add(0, 2, 1, "About");
             popup.getMenu().add(0, 3, 2, "Privacy Policy");
             popup.getMenu().add(0, 4, 3, "Contact Us");
-            popup.getMenu().add(0, 5, 4, "Unlock Bonus");
             popup.setOnMenuItemClickListener(item -> {
                 switch (item.getItemId()) {
-                    case 1:
-                        startActivity(new Intent(this, SettingsActivity.class));
-                        return true;
-                    case 2:
-                        startActivity(new Intent(this, AboutActivity.class));
-                        return true;
-                    case 3:
-                        startActivity(new Intent(this, PrivacyPolicyActivity.class));
-                        return true;
-                    case 4:
-                        startActivity(new Intent(this, ContactActivity.class));
-                        return true;
-                    case 5:
-                        showRewardedAd();
-                        return true;
-                    default:
-                        return false;
+                    case 1: startActivity(new Intent(this, SettingsActivity.class)); return true;
+                    case 2: startActivity(new Intent(this, AboutActivity.class)); return true;
+                    case 3: startActivity(new Intent(this, PrivacyPolicyActivity.class)); return true;
+                    case 4: startActivity(new Intent(this, ContactActivity.class)); return true;
+                    default: return false;
                 }
             });
             popup.show();
@@ -153,6 +181,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupSearchBar() {
+        etSearch.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                // Hide content when search bar is focused
+                scrollContent.setVisibility(View.GONE);
+                layoutOffline.setVisibility(View.GONE);
+                layoutLoading.setVisibility(View.GONE);
+            } else {
+                // Restore content when search bar loses focus
+                if (etSearch.getText().toString().trim().isEmpty()) {
+                    loadData();
+                }
+            }
+        });
+
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void afterTextChanged(Editable s) {}
@@ -160,12 +202,13 @@ public class MainActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String query = s.toString().trim();
                 if (query.isEmpty()) {
-                    fetchTechTips();
+                    // Hide everything while search bar is empty and focused
+                    scrollContent.setVisibility(View.GONE);
+                    layoutOffline.setVisibility(View.GONE);
+                    layoutLoading.setVisibility(View.GONE);
                 } else if (query.matches("\\d+")) {
-                    // Search by ID
                     searchTechTipById(Long.parseLong(query));
                 } else {
-                    // Search by keyword
                     searchTechTips(query);
                 }
             }
@@ -176,12 +219,10 @@ public class MainActivity extends AppCompatActivity {
         navHome.setOnClickListener(v -> selectTab(0));
         navCategory.setOnClickListener(v -> {
             selectTab(1);
-            showInterstitialAd();
             startActivity(new Intent(this, CategoryActivity.class));
         });
         navPlay.setOnClickListener(v -> {
             selectTab(2);
-            showInterstitialAd();
             startActivity(new Intent(this, PlayActivity.class));
         });
         navSaved.setOnClickListener(v -> {
@@ -196,6 +237,8 @@ public class MainActivity extends AppCompatActivity {
         navPlay.setBackgroundResource(index == 2 ? R.drawable.nav_selected_bg : 0);
         navSaved.setBackgroundResource(index == 3 ? R.drawable.nav_selected_bg : 0);
     }
+
+    // ── Data Loading ──────────────────────────────────────────────
 
     private void loadData() {
         showLoading();
@@ -260,9 +303,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             @Override
-            public void onFailure(Call<TechTip> call, Throwable t) {
-                showOffline();
-            }
+            public void onFailure(Call<TechTip> call, Throwable t) { showOffline(); }
         });
     }
 
@@ -285,61 +326,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // ── AdMob ─────────────────────────────────────────────────────
-
-    private void loadBannerAd() {
-        bannerAdView.loadAd(new AdRequest.Builder().build());
-    }
-
-    private void loadInterstitialAd() {
-        InterstitialAd.load(this, INTERSTITIAL_AD_UNIT_ID, new AdRequest.Builder().build(),
-            new InterstitialAdLoadCallback() {
-                @Override public void onAdLoaded(InterstitialAd ad) {
-                    mInterstitialAd = ad;
-                    mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                        @Override public void onAdDismissedFullScreenContent() {
-                            mInterstitialAd = null; loadInterstitialAd();
-                        }
-                        @Override public void onAdFailedToShowFullScreenContent(AdError e) {
-                            mInterstitialAd = null;
-                        }
-                    });
-                }
-                @Override public void onAdFailedToLoad(LoadAdError e) { mInterstitialAd = null; }
-            });
-    }
-
-    public void showInterstitialAd() {
-        if (mInterstitialAd != null) mInterstitialAd.show(this);
-    }
-
-    private void loadRewardedAd() {
-        RewardedAd.load(this, REWARDED_AD_UNIT_ID, new AdRequest.Builder().build(),
-            new RewardedAdLoadCallback() {
-                @Override public void onAdLoaded(RewardedAd ad) {
-                    mRewardedAd = ad;
-                    mRewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                        @Override public void onAdDismissedFullScreenContent() {
-                            mRewardedAd = null; loadRewardedAd();
-                        }
-                        @Override public void onAdFailedToShowFullScreenContent(AdError e) {
-                            mRewardedAd = null;
-                        }
-                    });
-                }
-                @Override public void onAdFailedToLoad(LoadAdError e) { mRewardedAd = null; }
-            });
-    }
-
-    public void showRewardedAd() {
-        if (mRewardedAd != null) {
-            mRewardedAd.show(this, reward ->
-                Toast.makeText(this, "Bonus unlocked!", Toast.LENGTH_SHORT).show());
-        } else {
-            Toast.makeText(this, "Loading bonus, try again.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     // ── Options Menu ──────────────────────────────────────────────
 
     @Override
@@ -352,7 +338,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.menu_settings) {
-            showInterstitialAd();
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         } else if (id == R.id.menu_about) {
@@ -365,41 +350,29 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, ContactActivity.class));
             return true;
         } else if (id == R.id.menu_bonus) {
-            showRewardedAd();
+            Toast.makeText(this, "Coming soon!", Toast.LENGTH_SHORT).show();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private Handler refreshHandler = new Handler();
-    private Runnable refreshRunnable = new Runnable() {
-        @Override
-        public void run() {
-            fetchTechTips();
-            refreshHandler.postDelayed(this, 30000); // refresh every 30 seconds
-        }
-    };
+    // ── Lifecycle ─────────────────────────────────────────────────
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (bannerAdView != null) bannerAdView.resume();
         if (techTipAdapter != null) loadData();
-        // Start auto-refresh
         refreshHandler.postDelayed(refreshRunnable, 30000);
     }
 
     @Override
     protected void onPause() {
-        if (bannerAdView != null) bannerAdView.pause();
-        // Stop auto-refresh when app is in background
         refreshHandler.removeCallbacks(refreshRunnable);
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        if (bannerAdView != null) bannerAdView.destroy();
         refreshHandler.removeCallbacks(refreshRunnable);
         super.onDestroy();
     }

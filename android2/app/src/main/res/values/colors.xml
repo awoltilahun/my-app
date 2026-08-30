@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Static colors — never change between light/dark -->
+    <color name="colorBlue">#2D5BE3</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorGray">#6B7280</color>
+    <color name="colorPlayStore">#01875F</color>
+    <color name="colorRed">#CC0000</color>
+    <color name="colorPrimary">#1A1F2E</color>
+    <color name="colorPrimaryDark">#12161F</color>
+    <color name="colorAccent">#2D5BE3</color>
+
+    <!-- Default dark values (overridden by values-night and values-day) -->
+    <color name="colorBackground">#12161F</color>
+    <color name="colorSurface">#1A1F2E</color>
+    <color name="colorCard">#222836</color>
+    <color name="colorTextPrimary">#FFFFFF</color>
+    <color name="colorTextSecondary">#9BA3B8</color>
+    <color name="colorNavBar">#1A1F2E</color>
+    <color name="colorNavSelected">#FFFFFF</color>
+    <color name="colorNavUnselected">#6B7280</color>
+    <color name="colorDivider">#2A3040</color>
+</resources>

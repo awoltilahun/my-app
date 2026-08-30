@@ -355,6 +355,7 @@
         <div class="sidebar-item active" onclick="showPage('dashboard')">📊 Dashboard</div>
         <div class="sidebar-item" onclick="showPage('techtips')">💡 Tech Tips</div>
         <div class="sidebar-item" onclick="showPage('applinks')">🔗 App Links</div>
+        <div class="sidebar-item" onclick="showPage('notifications')">🔔 Notifications</div>
     </div>
 
     <!-- Content -->
@@ -433,6 +434,34 @@
             </div>
         </div>
 
+    </div>
+</div>
+
+<!-- Notifications Page -->
+<div id="page-notifications" class="hidden" style="padding:24px 32px;">
+    <div class="page-title">
+        <h2>Send Notification</h2>
+    </div>
+    <div style="max-width:540px;">
+        <div style="background:#1a1f2e;border-radius:12px;padding:24px;border:1px solid #2a3040;margin-bottom:16px;">
+            <p style="color:#9ba3b8;font-size:14px;line-height:1.8;margin-bottom:16px;">
+                Send a push notification to <strong style="color:#2d5be3;">all users</strong> who have the app installed.
+                Supports <strong style="color:#2d5be3;">Amharic (አማርኛ)</strong> and English.
+            </p>
+            <div class="form-group">
+                <label>Notification Title * (English or አማርኛ)</label>
+                <input type="text" id="notifTitle" 
+                    placeholder="e.g. New Tip! or አዲስ ምክር!"
+                    style="width:100%;padding:10px 12px;background:#0f1117;border:1px solid #2a3040;border-radius:8px;color:#e2e8f0;font-size:16px;" />
+            </div>
+            <div class="form-group" style="margin-top:12px;">
+                <label>Notification Message * (English or አማርኛ)</label>
+                <textarea id="notifBody" 
+                    placeholder="e.g. Check out our latest tip! or አዲስ ምክር ይመልከቱ!"
+                    style="width:100%;padding:10px 12px;background:#0f1117;border:1px solid #2a3040;border-radius:8px;color:#e2e8f0;font-size:16px;resize:vertical;min-height:80px;font-family:inherit;"></textarea>
+            </div>
+            <button onclick="sendNotification()" class="btn btn-primary" style="width:100%;margin-top:16px;font-size:16px;">🔔 Send to All Users</button>
+        </div>
     </div>
 </div>
 
@@ -548,7 +577,7 @@
     // ── Pages ─────────────────────────────────────────────────────
 
     function showPage(page) {
-        ['dashboard','techtips','applinks'].forEach(p => {
+        ['dashboard','techtips','applinks','notifications'].forEach(p => {
             document.getElementById('page-' + p).classList.add('hidden');
         });
         document.getElementById('page-' + page).classList.remove('hidden');
@@ -556,7 +585,7 @@
             el.classList.remove('active');
         });
         const items = document.querySelectorAll('.sidebar-item');
-        const map = {dashboard:0, techtips:1, applinks:2};
+        const map = {dashboard:0, techtips:1, applinks:2, notifications:3};
         items[map[page]].classList.add('active');
     }
 
@@ -869,6 +898,32 @@
         } catch(e) {
             document.getElementById('uploadProgress').style.display = 'none';
             showToast('Failed to upload image', 'error');
+        }
+    }
+
+    // ── Send Notification ─────────────────────────────────────────
+
+    async function sendNotification() {
+        const title = document.getElementById('notifTitle').value.trim();
+        const body  = document.getElementById('notifBody').value.trim();
+
+        if (!title) { showToast('Enter notification title', 'error'); return; }
+        if (!body)  { showToast('Enter notification message', 'error'); return; }
+
+        try {
+            const res = await fetch(`${BASE_URL}/api/notifications/send?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`, {
+                method: 'POST'
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                showToast('Notification sent to all users!', 'success');
+                document.getElementById('notifTitle').value = '';
+                document.getElementById('notifBody').value = '';
+            } else {
+                showToast('Failed: ' + data.message, 'error');
+            }
+        } catch(e) {
+            showToast('Error: ' + e.message, 'error');
         }
     }
 

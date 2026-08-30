@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorBackground">#F0F2F5</color>
+    <color name="colorCard">#FFFFFF</color>
+    <color name="colorDivider">#E0E0E0</color>
+    <color name="colorNavBar">#FFFFFF</color>
+    <color name="colorNavSelected">#1565C0</color>
+    <color name="colorNavUnselected">#9E9E9E</color>
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorTextPrimary">#1A1A1A</color>
+    <color name="colorTextSecondary">#616161</color>
+    <style name="Theme.TechApp" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">#1565C0</item>
+        <item name="colorPrimaryDark">#0D47A1</item>
+        <item name="colorAccent">#2D5BE3</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:statusBarColor">#0D47A1</item>
+        <item name="android:navigationBarColor">@color/colorNavBar</item>
+    </style>
+</resources>

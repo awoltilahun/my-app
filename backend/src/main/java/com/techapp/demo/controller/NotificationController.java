@@ -27,6 +27,12 @@ public class NotificationController {
 
         Map<String, String> response = new HashMap<>();
 
+        if (googleCredentials == null) {
+            response.put("status", "error");
+            response.put("message", "Firebase not configured on this server");
+            return new ResponseEntity<>(response, HttpStatus.SERVICE_UNAVAILABLE);
+        }
+
         try {
             // Refresh token if expired
             googleCredentials.refreshIfExpired();

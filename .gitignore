@@ -31,3 +31,7 @@ uploads/
 # Environment / secrets
 *.env
 application-prod.properties
+
+# Firebase service account — never commit to git
+backend/src/main/resources/*firebase*.json
+backend/src/main/resources/*adminsdk*.json

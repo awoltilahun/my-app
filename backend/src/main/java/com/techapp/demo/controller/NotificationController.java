@@ -3,6 +3,7 @@ package com.techapp.demo.controller;
 import com.google.auth.oauth2.GoogleCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,6 +19,7 @@ public class NotificationController {
             "https://fcm.googleapis.com/v1/projects/etechpro-1b433/messages:send";
 
     @Autowired
+    @Nullable
     private GoogleCredentials googleCredentials;
 
     @PostMapping(value = "/send", produces = "application/json;charset=UTF-8")
@@ -34,11 +36,9 @@ public class NotificationController {
         }
 
         try {
-            // Refresh token if expired
             googleCredentials.refreshIfExpired();
             String accessToken = googleCredentials.getAccessToken().getTokenValue();
 
-            // Build FCM message
             Map<String, Object> notification = new HashMap<>();
             notification.put("title", title);
             notification.put("body", body);
@@ -50,14 +50,14 @@ public class NotificationController {
             Map<String, Object> payload = new HashMap<>();
             payload.put("message", message);
 
-            // Send to FCM v1 API
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setBearerAuth(accessToken);
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> fcmResponse = restTemplate.postForEntity(FCM_URL, entity, String.class);
+            ResponseEntity<String> fcmResponse = restTemplate.postForEntity(
+                    FCM_URL, entity, String.class);
 
             if (fcmResponse.getStatusCode() == HttpStatus.OK) {
                 response.put("status", "success");

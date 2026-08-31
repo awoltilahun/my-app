@@ -16,7 +16,7 @@ public class FirebaseConfig {
     public GoogleCredentials googleCredentials() throws IOException {
 
         // Try environment variable first (for Railway deployment)
-        String credentialsJson = System.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON");
+        String credentialsJson = System.getenv("FIREBASE_CREDENTIALS");
 
         InputStream serviceAccount;
         if (credentialsJson != null && !credentialsJson.isEmpty()) {

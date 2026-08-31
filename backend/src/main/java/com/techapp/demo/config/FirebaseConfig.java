@@ -14,19 +14,21 @@ public class FirebaseConfig {
 
     @Bean
     public GoogleCredentials googleCredentials() throws IOException {
-
         // Try environment variable first (for Railway deployment)
-        String credentialsJson = System.getenv("FIREBASE_CREDENTIALS");
+        String credentialsJson = System.getenv("FCM_CONFIG");
 
         InputStream serviceAccount;
         if (credentialsJson != null && !credentialsJson.isEmpty()) {
-            // Use environment variable
-            serviceAccount = new ByteArrayInputStream(credentialsJson.getBytes());
+            serviceAccount = new ByteArrayInputStream(credentialsJson.getBytes("UTF-8"));
         } else {
             // Fall back to local file
             serviceAccount = getClass()
                     .getClassLoader()
                     .getResourceAsStream("etechpro-1b433-firebase-adminsdk-fbsvc-289b460cd6.json");
+        }
+
+        if (serviceAccount == null) {
+            throw new IOException("Firebase credentials not found");
         }
 
         return GoogleCredentials

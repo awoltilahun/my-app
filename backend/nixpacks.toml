@@ -1,5 +1,8 @@
+[variables]
+NIXPACKS_JDK_VERSION = "17"
+
 [phases.build]
-cmds = ["mvn clean package -DskipTests"]
+cmds = ["mvn clean package -DskipTests -q"]
 
 [start]
-cmd = "java -jar target/demo-1.0.0.jar"
+cmd = "java -Xmx512m -jar target/demo-1.0.0.jar"

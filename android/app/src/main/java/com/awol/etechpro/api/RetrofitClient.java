@@ -50,4 +50,10 @@ public class RetrofitClient {
         }
         return apiService;
     }
+
+    // Call this to force fresh data
+    public static void resetInstance() {
+        retrofit = null;
+        apiService = null;
+    }
 }

@@ -49,7 +49,7 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void fetchTechTips() {
-        RetrofitClient.getApiService().getAllTechTips().enqueue(new Callback<List<TechTip>>() {
+        RetrofitClient.getApiService().getAllTechTips(System.currentTimeMillis()).enqueue(new Callback<List<TechTip>>() {
             @Override
             public void onResponse(Call<List<TechTip>> call, Response<List<TechTip>> response) {
                 if (response.isSuccessful() && response.body() != null) {

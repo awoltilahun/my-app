@@ -17,7 +17,7 @@ import retrofit2.http.Query;
 public interface ApiService {
 
     @GET("api/techtips")
-    Call<List<TechTip>> getAllTechTips();
+    Call<List<TechTip>> getAllTechTips(@Query("_t") long timestamp);
 
     @GET("api/techtips/{id}")
     Call<TechTip> getTechTipById(@Path("id") Long id);

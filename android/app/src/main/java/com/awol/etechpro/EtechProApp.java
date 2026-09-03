@@ -19,7 +19,7 @@ public class EtechProApp extends Application {
 
         // Set dark mode as default on first launch
         if (!prefs.contains("dark_mode")) {
-            prefs.edit().putBoolean("dark_mode", true).apply();
+            prefs.edit().putBoolean("dark_mode", false).apply();
         }
 
         // Apply saved theme

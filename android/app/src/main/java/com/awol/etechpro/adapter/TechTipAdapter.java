@@ -35,7 +35,7 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        return position == 0 ? VIEW_TYPE_FEATURED : VIEW_TYPE_REGULAR;
+        return VIEW_TYPE_REGULAR;
     }
 
     @NonNull
@@ -80,14 +80,12 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             rHolder.tvDate.setText(formatDate(tip.getCreatedAt()));
 
             String imageUrl = tip.getDisplayImageUrl();
-            if (imageUrl != null) {
-                Glide.with(context)
-                        .load(imageUrl)
-                        .placeholder(R.drawable.ic_video_placeholder)
-                        .error(R.drawable.ic_video_placeholder)
-                        .centerCrop()
-                        .into(rHolder.ivThumbnail);
-            }
+            Glide.with(context)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_video_placeholder)
+                    .error(R.drawable.ic_video_placeholder)
+                    .centerCrop()
+                    .into(rHolder.ivThumbnail);
 
             // Save button
             updateSaveIcon(rHolder.ivSave, tip);
@@ -103,6 +101,21 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             });
 
             rHolder.itemView.setOnClickListener(v -> openDetail(tip));
+
+            // Share button
+            if (rHolder.ivShare != null) {
+                rHolder.ivShare.setOnClickListener(v -> {
+                    android.content.Intent shareIntent = new android.content.Intent(android.content.Intent.ACTION_SEND);
+                    shareIntent.setType("text/plain");
+                    shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, tip.getTitle());
+                    shareIntent.putExtra(android.content.Intent.EXTRA_TEXT,
+                            tip.getTitle() + "\n\n" + tip.getDescription() +
+                            (tip.getWebsiteUrl() != null && !tip.getWebsiteUrl().isEmpty() ?
+                            "\n\nGet it: " + tip.getWebsiteUrl() : "") +
+                            "\n\nShared from Etech Pro");
+                    context.startActivity(android.content.Intent.createChooser(shareIntent, "Share via"));
+                });
+            }
         }
     }
 
@@ -164,13 +177,14 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     static class RegularViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivThumbnail, ivSave;
+        ImageView ivThumbnail, ivSave, ivShare;
         TextView tvTitle, tvDescription, tvDate;
 
         RegularViewHolder(@NonNull View itemView) {
             super(itemView);
             ivThumbnail   = itemView.findViewById(R.id.iv_thumbnail);
-            ivSave        = itemView.findViewById(R.id.iv_save);
+            ivSave  = itemView.findViewById(R.id.iv_save);
+            ivShare = itemView.findViewById(R.id.iv_share);
             tvTitle       = itemView.findViewById(R.id.tv_tip_title);
             tvDescription = itemView.findViewById(R.id.tv_tip_description);
             tvDate        = itemView.findViewById(R.id.tv_tip_date);

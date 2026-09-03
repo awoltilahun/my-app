@@ -45,11 +45,18 @@ public class SavedManager {
 
     // Get all saved tips
     public static List<TechTip> getSavedTips(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        String json = prefs.getString(KEY_TIPS, null);
-        if (json == null) return new ArrayList<>();
-        Type type = new TypeToken<List<TechTip>>(){}.getType();
-        return new Gson().fromJson(json, type);
+        try {
+            SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            String json = prefs.getString(KEY_TIPS, null);
+            if (json == null) return new ArrayList<>();
+            Type type = new TypeToken<List<TechTip>>(){}.getType();
+            return new Gson().fromJson(json, type);
+        } catch (Exception e) {
+            // Clear corrupted data
+            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                   .edit().clear().apply();
+            return new ArrayList<>();
+        }
     }
 
     // Persist to SharedPreferences

@@ -22,6 +22,18 @@
             android:value="ca-app-pub-3940256099942544~3347511713" />
         -->
 
+        <!-- Splash Screen -->
+        <activity
+            android:name=".ui.SplashActivity"
+            android:exported="true"
+            android:label="Etech Pro"
+            android:theme="@style/Theme.TechApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <!-- Firebase Cloud Messaging -->
         <service
             android:name=".service.MyFirebaseMessagingService"
@@ -31,15 +43,7 @@
             </intent-filter>
         </service>
 
-        <activity
-            android:name=".ui.MainActivity"
-            android:exported="true"
-            android:label="Etech Pro">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".ui.MainActivity" android:exported="false" android:label="Etech Pro" />
 
         <activity
             android:name=".ui.SettingsActivity"

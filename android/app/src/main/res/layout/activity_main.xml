@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:background="@color/colorBackground">
 
-    <!-- Search Bar on Top -->
+    <!-- Search Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,7 +24,6 @@
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-            <!-- Search Input -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -57,7 +56,6 @@
 
             </LinearLayout>
 
-            <!-- App Icon on right -->
             <ImageView
                 android:id="@+id/iv_app_icon"
                 android:layout_width="46dp"
@@ -75,41 +73,20 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <!-- Pull to Refresh + Scroll -->
+        <!-- SwipeRefresh + RecyclerView directly (no ScrollView wrapper) -->
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipe_refresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ScrollView
-                android:id="@+id/scroll_content"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_tech_tips"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fillViewport="true"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingBottom="8dp">
-
-                    <ProgressBar
-                        android:id="@+id/progress_bar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:visibility="gone" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rv_tech_tips"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        android:paddingTop="8dp" />
-
-                </LinearLayout>
-            </ScrollView>
+                android:visibility="gone"
+                android:clipToPadding="false"
+                android:paddingTop="8dp"
+                android:paddingBottom="16dp" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -194,7 +171,6 @@
         android:orientation="horizontal"
         android:elevation="12dp">
 
-        <!-- Home -->
         <LinearLayout
             android:id="@+id/nav_home"
             android:layout_width="0dp"
@@ -208,21 +184,20 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🏠"
-                android:textSize="26sp"
+                android:text="&#127968;"
+                android:textSize="24sp"
                 android:layout_marginBottom="2dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Home"
-                android:textColor="@color/colorNavSelected"
-                android:textSize="12sp"
+                android:textColor="@color/colorWhite"
+                android:textSize="11sp"
                 android:textStyle="bold" />
 
         </LinearLayout>
 
-        <!-- Category -->
         <LinearLayout
             android:id="@+id/nav_category"
             android:layout_width="0dp"
@@ -235,8 +210,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="📂"
-                android:textSize="26sp"
+                android:text="&#128193;"
+                android:textSize="24sp"
                 android:layout_marginBottom="2dp" />
 
             <TextView
@@ -244,11 +219,10 @@
                 android:layout_height="wrap_content"
                 android:text="Category"
                 android:textColor="@color/colorNavUnselected"
-                android:textSize="12sp" />
+                android:textSize="11sp" />
 
         </LinearLayout>
 
-        <!-- Play -->
         <LinearLayout
             android:id="@+id/nav_play"
             android:layout_width="0dp"
@@ -261,8 +235,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="▶️"
-                android:textSize="26sp"
+                android:text="&#9654;"
+                android:textSize="24sp"
+                android:textColor="@color/colorNavUnselected"
                 android:layout_marginBottom="2dp" />
 
             <TextView
@@ -270,11 +245,10 @@
                 android:layout_height="wrap_content"
                 android:text="Play"
                 android:textColor="@color/colorNavUnselected"
-                android:textSize="12sp" />
+                android:textSize="11sp" />
 
         </LinearLayout>
 
-        <!-- Saved -->
         <LinearLayout
             android:id="@+id/nav_saved"
             android:layout_width="0dp"
@@ -287,8 +261,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="💾"
-                android:textSize="26sp"
+                android:text="&#128190;"
+                android:textSize="24sp"
                 android:layout_marginBottom="2dp" />
 
             <TextView
@@ -296,7 +270,7 @@
                 android:layout_height="wrap_content"
                 android:text="Saved"
                 android:textColor="@color/colorNavUnselected"
-                android:textSize="12sp" />
+                android:textSize="11sp" />
 
         </LinearLayout>
 

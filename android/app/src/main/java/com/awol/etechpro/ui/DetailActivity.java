@@ -30,7 +30,9 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        // Setup back button
+        // Setup toolbar
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar_detail);
+        if (toolbar != null) setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);

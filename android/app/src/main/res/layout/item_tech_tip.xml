@@ -85,6 +85,14 @@
                 android:text="August 24, 2026" />
 
             <ImageView
+                android:id="@+id/iv_share"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/ic_menu_share"
+                android:padding="2dp"
+                android:layout_marginEnd="8dp" />
+
+            <ImageView
                 android:id="@+id/iv_save"
                 android:layout_width="24dp"
                 android:layout_height="24dp"

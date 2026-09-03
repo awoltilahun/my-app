@@ -5,6 +5,14 @@
     android:orientation="vertical"
     android:background="@color/colorBackground">
 
+    <!-- Toolbar with back button -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_detail"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/colorSurface"
+        android:elevation="4dp" />
+
     <!-- Scrollable Content -->
     <ScrollView
         android:layout_width="match_parent"
@@ -19,8 +27,9 @@
             <!-- Full width image -->
             <ImageView
                 android:id="@+id/iv_detail_image"
+                android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
+                android:layout_height="300dp"
                 android:scaleType="centerCrop"
                 android:contentDescription="Detail image"
                 android:background="@color/colorCard" />

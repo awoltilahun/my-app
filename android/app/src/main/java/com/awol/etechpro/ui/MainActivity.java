@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView rvTechTips;
     private EditText etSearch;
-    private ScrollView scrollContent;
+    private View scrollContent; // now points to rv_tech_tips
     private LinearLayout layoutOffline, layoutLoading;
     private Button btnRetry;
     private LinearLayout navHome, navCategory, navPlay, navSaved;
@@ -60,8 +60,9 @@ public class MainActivity extends AppCompatActivity {
     private Runnable refreshRunnable = new Runnable() {
         @Override
         public void run() {
+            // Silent background refresh - only update if response has data
             fetchTechTips();
-            refreshHandler.postDelayed(this, 30000);
+            refreshHandler.postDelayed(this, 600000); // 10 minutes
         }
     };
 
@@ -77,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
         initViews();
         setupRecyclerView();
         setupSearchBar();
+        // Prevent search bar from getting focus on startup
+        etSearch.clearFocus();
         setupBottomNav();
 
         // Request notification permission on first launch
@@ -124,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
     private void initViews() {
         rvTechTips    = findViewById(R.id.rv_tech_tips);
         etSearch      = findViewById(R.id.et_search);
-        scrollContent = findViewById(R.id.scroll_content);
+        scrollContent = findViewById(R.id.rv_tech_tips);
         layoutOffline = findViewById(R.id.layout_offline);
         layoutLoading = findViewById(R.id.layout_loading);
         btnRetry      = findViewById(R.id.btn_retry);
@@ -241,7 +244,10 @@ public class MainActivity extends AppCompatActivity {
     // ── Data Loading ──────────────────────────────────────────────
 
     private void loadData() {
-        showLoading();
+        // Only show loading screen if content is not already visible
+        if (scrollContent.getVisibility() != View.VISIBLE) {
+            showLoading();
+        }
         fetchTechTips();
     }
 
@@ -264,15 +270,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fetchTechTips() {
-        RetrofitClient.getApiService().getAllTechTips().enqueue(new Callback<List<TechTip>>() {
+        RetrofitClient.getApiService().getAllTechTips(System.currentTimeMillis()).enqueue(new Callback<List<TechTip>>() {
             @Override
             public void onResponse(Call<List<TechTip>> call, Response<List<TechTip>> response) {
                 if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
-                if (response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body() != null
+                        && !response.body().isEmpty()) {
                     techTipList = response.body();
                     techTipAdapter.updateList(techTipList);
+                    Log.d(TAG, "Tips loaded: " + techTipList.size());
                     showContent();
-                } else {
+                } else if (techTipList.isEmpty()) {
                     showOffline();
                 }
             }
@@ -280,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call<List<TechTip>> call, Throwable t) {
                 if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
                 Log.e(TAG, "Failed: " + t.getMessage());
-                showOffline();
+                if (techTipList.isEmpty()) showOffline();
             }
         });
     }
@@ -361,8 +369,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (techTipAdapter != null) loadData();
-        refreshHandler.postDelayed(refreshRunnable, 30000);
+        // Only load data if list is empty
+        if (techTipAdapter != null && techTipList.isEmpty()) {
+            loadData();
+        }
+        refreshHandler.postDelayed(refreshRunnable, 600000);
     }
 
     @Override

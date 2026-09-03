@@ -35,7 +35,7 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        return VIEW_TYPE_REGULAR;
+        return position == 0 ? VIEW_TYPE_FEATURED : VIEW_TYPE_REGULAR;
     }
 
     @NonNull

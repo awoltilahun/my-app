@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         String searchQuery = getIntent().getStringExtra("search_query");
+        String filterType = getIntent().getStringExtra("filter_type");
 
         // No toolbar — using custom search bar with icon popup menu
 
@@ -87,7 +88,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (searchQuery != null && !searchQuery.isEmpty()) {
             etSearch.setText(searchQuery);
-            searchTechTips(searchQuery);
+            if (filterType != null) {
+                filterTipsByType(filterType);
+            } else {
+                searchTechTips(searchQuery);
+            }
         } else {
             loadData();
         }
@@ -335,6 +340,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ── Options Menu ──────────────────────────────────────────────
+
+    private void filterTipsByType(String filterType) {
+        showLoading();
+        RetrofitClient.getApiService().getAllTechTips(System.currentTimeMillis()).enqueue(new Callback<List<TechTip>>() {
+            @Override
+            public void onResponse(Call<List<TechTip>> call, Response<List<TechTip>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<TechTip> all = response.body();
+                    List<TechTip> filtered = new ArrayList<>();
+                    for (TechTip tip : all) {
+                        String videoLink = tip.getVideoLink() != null ? tip.getVideoLink() : "";
+                        String websiteUrl = tip.getWebsiteUrl() != null ? tip.getWebsiteUrl() : "";
+                        switch (filterType) {
+                            case "playstore":
+                                if (websiteUrl.contains("play.google.com")) filtered.add(tip);
+                                break;
+                            case "youtube":
+                                if (videoLink.contains("youtube") || videoLink.contains("youtu.be")) filtered.add(tip);
+                                break;
+                            case "tips_only":
+                                if (!videoLink.contains("youtube") && !videoLink.contains("youtu.be")
+                                        && !websiteUrl.contains("play.google.com")) filtered.add(tip);
+                                break;
+                            default:
+                                filtered.add(tip);
+                        }
+                    }
+                    techTipAdapter.updateList(filtered);
+                    showContent();
+                } else {
+                    showOffline();
+                }
+            }
+            @Override
+            public void onFailure(Call<List<TechTip>> call, Throwable t) { showOffline(); }
+        });
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

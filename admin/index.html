@@ -893,26 +893,26 @@
         };
         reader.readAsDataURL(file);
 
-        // Upload to server
+        // Upload directly to Cloudinary from browser
         document.getElementById('uploadProgress').style.display = 'block';
 
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('upload_preset', 'etechpro_upload'); // unsigned preset
+        formData.append('cloud_name', 'blf6qaue');
 
         try {
-            const res  = await fetch(`${BASE_URL}/api/upload/image`, {
+            const res = await fetch('https://api.cloudinary.com/v1_1/blf6qaue/image/upload', {
                 method: 'POST',
                 body: formData
             });
             const data = await res.json();
-
             document.getElementById('uploadProgress').style.display = 'none';
-
-            if (data.url) {
-                document.getElementById('tipImageUrl').value = data.url;
+            if (data.secure_url) {
+                document.getElementById('tipImageUrl').value = data.secure_url;
                 showToast('Image uploaded successfully!', 'success');
             } else {
-                showToast(data.error || 'Upload failed', 'error');
+                showToast('Upload failed: ' + (data.error?.message || 'Unknown error'), 'error');
             }
         } catch(e) {
             document.getElementById('uploadProgress').style.display = 'none';

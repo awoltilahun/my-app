@@ -1,31 +1,23 @@
 package com.techapp.demo.controller;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/upload")
 @CrossOrigin(origins = "*")
 public class FileUploadController {
 
-    @Value("${upload.dir:C:/uploads}")
-    private String uploadDir;
-
-    @Value("${server.url:http://localhost:8080}")
-    private String serverUrl;
+    @Autowired
+    private Cloudinary cloudinary;
 
     @PostMapping("/image")
     public ResponseEntity<Map<String, String>> uploadImage(
@@ -50,31 +42,21 @@ public class FileUploadController {
         }
 
         try {
-            // Use absolute path to avoid Tomcat temp dir issues
-            Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
+            // Upload to Cloudinary
+            Map uploadResult = cloudinary.uploader().upload(
+                    file.getBytes(),
+                    ObjectUtils.asMap(
+                            "folder", "etechpro",
+                            "resource_type", "image"
+                    )
+            );
 
-            // Generate unique filename
-            String originalName = file.getOriginalFilename();
-            String extension = (originalName != null && originalName.contains("."))
-                    ? originalName.substring(originalName.lastIndexOf(".")).toLowerCase()
-                    : ".jpg";
-            String fileName = UUID.randomUUID().toString() + extension;
-
-            // Save using InputStream — avoids Tomcat temp file issues
-            Path filePath = uploadPath.resolve(fileName);
-            try (InputStream is = file.getInputStream()) {
-                Files.copy(is, filePath, StandardCopyOption.REPLACE_EXISTING);
-            }
-
-            String imageUrl = serverUrl + "/uploads/" + fileName;
+            String imageUrl = (String) uploadResult.get("secure_url");
             response.put("url", imageUrl);
-            response.put("fileName", fileName);
+            response.put("public_id", (String) uploadResult.get("public_id"));
             return new ResponseEntity<>(response, HttpStatus.OK);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             response.put("error", "Upload failed: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }

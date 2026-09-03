@@ -23,6 +23,13 @@
     </properties>
     
     <dependencies>
+        <!-- Cloudinary for image upload -->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http44</artifactId>
+            <version>1.36.0</version>
+        </dependency>
+
         <!-- Google Auth Library for FCM HTTP v1 API (lightweight) -->
         <dependency>
             <groupId>com.google.auth</groupId>

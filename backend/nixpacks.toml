@@ -5,4 +5,4 @@ NIXPACKS_JDK_VERSION = "17"
 cmds = ["mvn clean package -DskipTests -q"]
 
 [start]
-cmd = "java -Xmx300m -Xms100m -XX:+UseSerialGC -jar target/demo-1.0.0.jar"
+cmd = "java -Xmx200m -Xms80m -XX:+UseSerialGC -XX:MaxMetaspaceSize=128m -jar target/demo-1.0.0.jar"

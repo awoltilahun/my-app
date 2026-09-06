@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,6 +25,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -69,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Allow content to draw behind system bars
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setContentView(R.layout.activity_main);
 
         String searchQuery = getIntent().getStringExtra("search_query");
@@ -77,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
         // No toolbar — using custom search bar with icon popup menu
 
         initViews();
+        applyWindowInsets();
         setupRecyclerView();
         setupSearchBar();
         // Prevent search bar from getting focus on startup
@@ -128,6 +135,46 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ── Views ─────────────────────────────────────────────────────
+
+    // ── Window Insets (fix status bar / nav bar overlap on all phones) ────────
+
+    private void applyWindowInsets() {
+        // Search bar at top — pad by status bar height
+        View searchBar = findViewById(R.id.search_bar_container);
+        // Bottom nav — pad by navigation bar height
+        LinearLayout bottomNav = findViewById(R.id.bottom_nav);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
+            int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            int navBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+
+            // Apply top padding to search bar
+            if (searchBar != null) {
+                searchBar.setPadding(
+                    searchBar.getPaddingLeft(),
+                    statusBarHeight + searchBar.getContext().getResources()
+                        .getDimensionPixelSize(R.dimen.search_bar_top_padding),
+                    searchBar.getPaddingRight(),
+                    searchBar.getPaddingBottom()
+                );
+            }
+
+            // Apply bottom padding to bottom nav
+            if (bottomNav != null) {
+                ViewGroup.LayoutParams params = bottomNav.getLayoutParams();
+                bottomNav.setPadding(
+                    bottomNav.getPaddingLeft(),
+                    bottomNav.getPaddingTop(),
+                    bottomNav.getPaddingRight(),
+                    navBarHeight
+                );
+                params.height = getResources().getDimensionPixelSize(R.dimen.bottom_nav_height) + navBarHeight;
+                bottomNav.setLayoutParams(params);
+            }
+
+            return insets;
+        });
+    }
 
     private void initViews() {
         rvTechTips    = findViewById(R.id.rv_tech_tips);
@@ -407,6 +454,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ── Lifecycle ─────────────────────────────────────────────────
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        String searchQuery = intent.getStringExtra("search_query");
+        String filterType = intent.getStringExtra("filter_type");
+        if (searchQuery != null && !searchQuery.isEmpty()) {
+            etSearch.setText(searchQuery);
+            if (filterType != null) {
+                filterTipsByType(filterType);
+            } else {
+                searchTechTips(searchQuery);
+            }
+        } else {
+            etSearch.setText("");
+            loadData();
+        }
+    }
 
     @Override
     protected void onResume() {

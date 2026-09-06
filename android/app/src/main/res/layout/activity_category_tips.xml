@@ -5,7 +5,6 @@
     android:orientation="vertical"
     android:background="@color/colorBackground">
 
-    <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_category_tips"
         android:layout_width="match_parent"
@@ -27,31 +26,28 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="📭"
-            android:textSize="64sp"
-            android:layout_marginBottom="16dp" />
-
-        <TextView
-            android:id="@+id/tv_empty_category"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="No tips found for this category"
             android:textColor="@color/colorTextPrimary"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:gravity="center"
-            android:layout_marginBottom="8dp" />
+            android:gravity="center" />
 
     </LinearLayout>
 
-    <!-- Tips List -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_category_tips"
+    <!-- Tips List with pull to refresh -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_category"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:clipToPadding="false" />
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_category_tips"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="8dp"
+            android:clipToPadding="false" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>

@@ -426,7 +426,7 @@
                 app:cardBackgroundColor="@color/colorSurface">
 
                 <LinearLayout
-                    android:id="@+id/btn_clear_cache"
+                    android:id="@+id/btn_clear_cache_nav"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:orientation="horizontal"
@@ -446,7 +446,7 @@
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/tv_cache_size"
+                        android:id="@+id/tv_cache_size_nav"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorGray"

@@ -1,29 +1,30 @@
-# Add project specific ProGuard rules here.
-
-# Keep Retrofit interfaces
+# Retrofit
 -keepattributes Signature
 -keepattributes Exceptions
 -keep class retrofit2.** { *; }
 -keepclasseswithmembers class * {
     @retrofit2.http.* <methods>;
 }
+-dontwarn retrofit2.**
 
-# Keep Gson models
--keep class com.techapp.android.model.** { *; }
--keepattributes *Annotation*
-
-# Keep OkHttp
+# OkHttp
 -dontwarn okhttp3.**
 -keep class okhttp3.** { *; }
 -keep interface okhttp3.** { *; }
+-dontwarn okio.**
 
-# Keep AdMob / Google Play Services
--keep class com.google.android.gms.ads.** { *; }
+# Gson
+-keep class com.google.gson.** { *; }
+-keep class com.awol.etechpro.model.** { *; }
+-keepattributes *Annotation*
 
-# Keep Glide
+# Glide
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep class * extends com.bumptech.glide.module.AppGlideModule { *; }
--keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
-    **[] $VALUES;
-    public *;
-}
+
+# Firebase
+-keep class com.google.firebase.** { *; }
+-dontwarn com.google.firebase.**
+
+# Keep app model classes
+-keep class com.awol.etechpro.** { *; }

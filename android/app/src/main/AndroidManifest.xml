@@ -57,6 +57,13 @@
             android:label="Detail"
             android:parentActivityName=".ui.MainActivity" />
 
+        <!-- Category Tips Screen -->
+        <activity
+            android:name=".ui.CategoryTipsActivity"
+            android:exported="false"
+            android:label="Category"
+            android:parentActivityName=".ui.CategoryActivity" />
+
         <activity
             android:name=".ui.CategoryActivity"
             android:exported="false"

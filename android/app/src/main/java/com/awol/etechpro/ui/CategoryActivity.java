@@ -28,26 +28,25 @@ public class CategoryActivity extends AppCompatActivity {
         rvCategories.setLayoutManager(new LinearLayoutManager(this));
 
         List<String[]> categories = new ArrayList<>();
-        // [icon, name, subtitle, filter_type]
-        categories.add(new String[]{"⭐", "App Reviews", "Top rated apps reviewed", "playstore"});
-        categories.add(new String[]{"💡", "Tech Tips", "Daily tech tips and tricks", "tips_only"});
-        categories.add(new String[]{"📰", "Tech News", "Latest technology news", "tips_only"});
-        categories.add(new String[]{"📱", "Android Apps", "Best Android applications", "playstore"});
-        categories.add(new String[]{"🎓", "Tutorials", "Step by step video guides", "youtube"});
+        categories.add(new String[]{"⭐", "App Reviews",   "Top rated apps reviewed",       "playstore"});
+        categories.add(new String[]{"💡", "Tech Tips",     "Daily tech tips and tricks",     "tips_only"});
+        categories.add(new String[]{"📰", "Tech News",     "Latest technology news",         "tips_only"});
+        categories.add(new String[]{"📱", "Android Apps",  "Best Android applications",      "playstore"});
+        categories.add(new String[]{"🎓", "Tutorials",     "Step by step video guides",      "youtube"});
 
         categoryAdapter = new CategoryAdapter(this, categories, categoryName -> {
-            // Find the filter type for this category
-            String filterType = "tag";
+            // Find the filter type for tapped category
+            String fType = "tips_only";
             for (String[] cat : categories) {
                 if (cat[1].equals(categoryName)) {
-                    filterType = cat[3];
+                    fType = cat[3];
                     break;
                 }
             }
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("search_query", categoryName);
-            intent.putExtra("filter_type", filterType);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            // Open dedicated CategoryTipsActivity
+            Intent intent = new Intent(this, CategoryTipsActivity.class);
+            intent.putExtra("category_name", categoryName);
+            intent.putExtra("filter_type", fType);
             startActivity(intent);
         });
         rvCategories.setAdapter(categoryAdapter);

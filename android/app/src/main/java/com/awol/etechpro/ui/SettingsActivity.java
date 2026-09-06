@@ -82,27 +82,17 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         // ── Clear Cache ───────────────────────────────────────────
-        TextView tvCacheSize = findViewById(R.id.tv_cache_size);
-        LinearLayout btnClearCache = findViewById(R.id.btn_clear_cache);
-
-        if (tvCacheSize != null) {
-            tvCacheSize.setText(formatSize(getCacheSize()));
-        }
-
-        if (btnClearCache != null) {
-            btnClearCache.setOnClickListener(v -> {
-                new AlertDialog.Builder(this)
-                        .setTitle("Clear Cache")
-                        .setMessage("This will clear all cached images and data. Continue?")
-                        .setPositiveButton("Clear", (dialog, which) -> {
-                            deleteCache();
-                            new Thread(() -> Glide.get(this).clearDiskCache()).start();
-                            Glide.get(this).clearMemory();
-                            if (tvCacheSize != null) tvCacheSize.setText("0 KB");
-                            Toast.makeText(this, "Cache cleared successfully!", Toast.LENGTH_SHORT).show();
-                        })
-                        .setNegativeButton("Cancel", null)
-                        .show();
+        LinearLayout btnClearCacheNav = findViewById(R.id.btn_clear_cache_nav);
+        android.widget.TextView tvCacheSizeNav = findViewById(R.id.tv_cache_size_nav);
+        if (tvCacheSizeNav != null) tvCacheSizeNav.setText(formatSize(getCacheSize()));
+        if (btnClearCacheNav != null) {
+            btnClearCacheNav.setOnClickListener(v -> {
+                // Clear cache directly inside settings - no navigation
+                deleteCache();
+                new Thread(() -> com.bumptech.glide.Glide.get(this).clearDiskCache()).start();
+                com.bumptech.glide.Glide.get(this).clearMemory();
+                if (tvCacheSizeNav != null) tvCacheSizeNav.setText("0 KB");
+                Toast.makeText(this, "Cache cleared!", Toast.LENGTH_SHORT).show();
             });
         }
 

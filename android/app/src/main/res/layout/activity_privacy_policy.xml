@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Privacy Policy"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Last updated: January 1, 2025"
+            android:textColor="@color/colorGray"
+            android:textSize="14sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@color/colorDivider" />
+
+        <androidx.cardview.widget.CardView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/colorSurface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Intro -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="6dp"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:text="Abdi Technology built the Etech Pro app as a Free app. This SERVICE is provided at no cost and is intended for use as is.\n\nThis page informs visitors regarding our policies with the collection, use, and disclosure of Personal Information if anyone decides to use our Service.\n\nIf you choose to use our Service, then you agree to the collection and use of information in relation to this policy. The Personal Information that we collect is used for providing and improving the Service. We will not use or share your information with anyone except as described in this Privacy Policy." />
+
+                <!-- Information Collection -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="🔹 Information Collection and Use"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:lineSpacingExtra="6dp"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:text="For a better experience, while using our Service, we may require you to provide us with certain personally identifiable information. The information that we request will be retained by us and used as described in this privacy policy.\n\nThe app does use third-party services that may collect information used to identify you." />
+
+                <!-- Third Party -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="🔹 Third-Party Service Providers"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:lineSpacingExtra="4dp"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:text="Link to privacy policy of third-party service providers used by the app:" />
+
+                <!-- Clickable Links -->
+                <TextView
+                    android:id="@+id/link_google_play"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="• Google Play Services"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/link_admob"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="• AdMob"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/link_fcm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="• Firebase Cloud Messaging"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/link_firebase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="• Firebase Analytics"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/link_unity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="• Unity"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/link_onesignal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="• OneSignal"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/link_applovin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="• AppLovin"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/link_startapp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="• StartApp"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:textStyle="bold" />
+
+                <!-- Log Data -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="🔹 Log Data"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:lineSpacingExtra="6dp"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:text="Whenever you use our Service, in case of an error in the app, we collect data and information (through third-party products) on your phone called Log Data. This Log Data may include information such as your device Internet Protocol (IP) address, device name, operating system version, the configuration of the app when utilizing our Service, the time and date of your use of the Service, and other statistics." />
+
+                <!-- Cookies -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="🔹 Cookies"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:lineSpacingExtra="6dp"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:text="Cookies are files with a small amount of data that are commonly used as anonymous unique identifiers. These are sent to your browser from the websites that you visit and are stored on your device\'s internal memory.\n\nOur Service may use cookies to improve functionality. You can choose to accept or refuse cookies, and know when a cookie is being sent to your device." />
+
+                <!-- Links to Other Sites -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text=">> Links to Other Sites"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:lineSpacingExtra="6dp"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:text="This Service may contain links to other websites. If you click on a third-party link, you will be directed to that site. Note that these external sites are not operated by us. Therefore, we strongly advise you to review the Privacy Policy of those websites. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party sites or services." />
+
+                <!-- Children Privacy -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text=">> Children Privacy"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:lineSpacingExtra="6dp"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:text="Our Services are not intended for anyone under the age of 13. We do not knowingly collect personally identifiable information from children under 13. If we discover that a child under 13 has provided us with personal information, we immediately delete this from our servers. If you are a parent or guardian and you are aware that your child has provided personal information, please contact us so we can take necessary action." />
+
+                <!-- Security -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="🔹 Security"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:lineSpacingExtra="6dp"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:text="We value your trust in providing us your Personal Information, thus we strive to use commercially acceptable means of protecting it. But remember that no method of transmission over the internet, or method of electronic storage is 100% secure and reliable, and we cannot guarantee its absolute security." />
+
+                <!-- Changes -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="🔹 Changes to This Privacy Policy"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:lineSpacingExtra="6dp"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:text="We may update our Privacy Policy from time to time. Thus, you are advised to review this page periodically for any changes. We will notify you of changes by posting the new Privacy Policy on this page." />
+
+                <!-- Contact -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="🔹 Contact Us"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="8dp"
+                    android:lineSpacingExtra="6dp"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:text="If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at: etechsupport2@gmail.com" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+</ScrollView>

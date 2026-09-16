@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "169403824327",
+    "project_id": "etechpro-1b433",
+    "storage_bucket": "etechpro-1b433.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:169403824327:android:f7ae0bafc5dca82b1226e2",
+        "android_client_info": {
+          "package_name": "com.awol.etechpro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8QGU75LW0ttOOam303YwSw8YXHab_zbU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

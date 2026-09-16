@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <supports-screens
+        android:smallScreens="true"
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:xlargeScreens="true"
+        android:resizeable="true" />
+
+    <application
+        android:name=".EtechProApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="Etech Pro"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TechApp"
+        android:usesCleartextTraffic="true">
+
+        <!-- AdMob disabled temporarily
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713" />
+        -->
+
+        <!-- Splash Screen -->
+        <activity
+            android:name=".ui.SplashActivity"
+            android:exported="true"
+            android:label="Etech Pro"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@style/Theme.TechApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Firebase Cloud Messaging -->
+        <service
+            android:name=".service.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="false"
+            android:label="Etech Pro"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:exported="false"
+            android:label="Settings"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
+            android:name=".ui.DetailActivity"
+            android:exported="false"
+            android:label="Detail"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <!-- Category Tips Screen -->
+        <activity
+            android:name=".ui.CategoryTipsActivity"
+            android:exported="false"
+            android:label="Category"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName=".ui.CategoryActivity" />
+
+        <activity
+            android:name=".ui.CategoryActivity"
+            android:exported="false"
+            android:label="Categories"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
+            android:name=".ui.PlayActivity"
+            android:exported="false"
+            android:label="Play Videos"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
+            android:name=".ui.SavedActivity"
+            android:exported="false"
+            android:label="Saved Apps"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
+            android:name=".ui.AboutActivity"
+            android:exported="false"
+            android:label="About"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
+            android:name=".ui.PrivacyPolicyActivity"
+            android:exported="false"
+            android:label="Privacy Policy"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
+            android:name=".ui.ContactActivity"
+            android:exported="false"
+            android:label="Contact Us"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
+            android:name=".ui.ClearCacheActivity"
+            android:exported="false"
+            android:label="Clear Cache"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName=".ui.SettingsActivity" />
+
+    </application>
+
+</manifest>

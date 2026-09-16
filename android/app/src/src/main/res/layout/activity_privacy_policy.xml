@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Privacy Policy"
+            android:textColor="@android:color/black"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Last updated: January 1, 2025"
+            android:textColor="@android:color/secondary_text_dark"
+            android:textSize="13sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="16dp"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="4dp"
+            android:text="1. Information We Collect\n\nTechApp does not collect personal information. We only use anonymized usage analytics to improve the app experience.\n\n2. Third-Party Advertising\n\nThis app uses Google AdMob to display advertisements. AdMob may collect device information and use cookies to serve personalized ads. Please review Google's Privacy Policy at https://policies.google.com/privacy.\n\n3. Data Storage\n\nTech tips and app links are fetched from our server and are not stored on your device permanently.\n\n4. Internet Permission\n\nThis app requires internet access to load content from our backend and display advertisements.\n\n5. Children's Privacy\n\nThis app does not knowingly collect data from children under 13.\n\n6. Changes to This Policy\n\nWe may update this Privacy Policy from time to time. Changes will be reflected in the app.\n\n7. Contact Us\n\nFor privacy concerns, contact us at: support@techapp.com"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+</ScrollView>

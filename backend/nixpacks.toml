@@ -1,0 +1,8 @@
+[variables]
+NIXPACKS_JDK_VERSION = "17"
+
+[phases.build]
+cmds = ["mvn clean package -DskipTests -q"]
+
+[start]
+cmd = "java -Xmx200m -Xms80m -XX:+UseSerialGC -XX:MaxMetaspaceSize=128m -jar target/demo-1.0.0.jar"

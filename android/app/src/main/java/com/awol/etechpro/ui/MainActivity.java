@@ -235,6 +235,10 @@ public class MainActivity extends AppCompatActivity {
         rvTechTips.setAdapter(techTipAdapter);
     }
 
+    // Debounce handler for search — waits 400ms after user stops typing
+    private final Handler searchHandler = new Handler(android.os.Looper.getMainLooper());
+    private Runnable searchRunnable;
+
     private void setupSearchBar() {
         etSearch.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
@@ -257,15 +261,24 @@ public class MainActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String query = s.toString().trim();
                 if (query.isEmpty()) {
-                    // Hide everything while search bar is empty and focused
+                    // Cancel any pending search
+                    searchHandler.removeCallbacks(searchRunnable);
                     scrollContent.setVisibility(View.GONE);
                     layoutOffline.setVisibility(View.GONE);
                     layoutLoading.setVisibility(View.GONE);
-                } else if (query.matches("\\d+")) {
-                    searchTechTipById(Long.parseLong(query));
-                } else {
-                    searchTechTips(query);
+                    return;
                 }
+                // Cancel previous pending search
+                searchHandler.removeCallbacks(searchRunnable);
+                // Wait 400ms after user stops typing before searching
+                searchRunnable = () -> {
+                    if (query.matches("\\d+")) {
+                        searchTechTipById(Long.parseLong(query));
+                    } else {
+                        searchTechTips(query);
+                    }
+                };
+                searchHandler.postDelayed(searchRunnable, 400);
             }
         });
     }
@@ -356,10 +369,14 @@ public class MainActivity extends AppCompatActivity {
                     techTipAdapter.updateList(result);
                     showContent();
                 } else {
-                    techTipAdapter.updateList(new ArrayList<>());
-                    showContent();
+                    // Show message and auto-return to home after 2 seconds
                     Toast.makeText(MainActivity.this,
                         "No tip found with ID: " + id, Toast.LENGTH_SHORT).show();
+                    new Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                        etSearch.setText("");
+                        etSearch.clearFocus();
+                        loadData();
+                    }, 2000);
                 }
             }
             @Override
@@ -368,20 +385,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void searchTechTips(String keyword) {
+        showLoading();
         RetrofitClient.getApiService().searchTechTips(keyword).enqueue(new Callback<List<TechTip>>() {
             @Override
             public void onResponse(Call<List<TechTip>> call, Response<List<TechTip>> response) {
-                if (response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body() != null
+                        && !response.body().isEmpty()) {
                     techTipAdapter.updateList(response.body());
                     showContent();
                 } else {
-                    techTipAdapter.updateList(new ArrayList<>());
-                    showContent();
+                    // No results found — show message and auto-return to home
+                    Toast.makeText(MainActivity.this,
+                        "No results found for: \"" + keyword + "\"", Toast.LENGTH_SHORT).show();
+                    new Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                        etSearch.setText("");
+                        etSearch.clearFocus();
+                        loadData();
+                    }, 2000);
                 }
             }
             @Override
             public void onFailure(Call<List<TechTip>> call, Throwable t) {
                 Log.e(TAG, "Search failed: " + t.getMessage());
+                Toast.makeText(MainActivity.this,
+                    "Search failed. Check your connection.", Toast.LENGTH_SHORT).show();
+                new Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                    etSearch.setText("");
+                    etSearch.clearFocus();
+                    loadData();
+                }, 2000);
             }
         });
     }
@@ -493,6 +525,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         refreshHandler.removeCallbacks(refreshRunnable);
+        searchHandler.removeCallbacks(searchRunnable);
         super.onDestroy();
     }
 }

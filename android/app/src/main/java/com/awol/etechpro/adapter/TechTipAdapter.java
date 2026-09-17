@@ -136,6 +136,7 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         intent.putExtra(DetailActivity.EXTRA_VIDEO_LINK,  tip.getVideoLink());
         intent.putExtra(DetailActivity.EXTRA_WEBSITE_URL, tip.getWebsiteUrl());
         intent.putExtra(DetailActivity.EXTRA_DATE,        formatDate(tip.getCreatedAt()));
+        intent.putExtra(DetailActivity.EXTRA_TIP_ID,      tip.getId() != null ? tip.getId() : -1L);
         context.startActivity(intent);
     }
 

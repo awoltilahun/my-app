@@ -28,7 +28,7 @@ public class SettingsActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "etech_prefs";
     private static final String KEY_DARK   = "dark_mode";
     private static final String KEY_NOTIF  = "notifications_enabled";
-    private static final int CURRENT_VERSION = 6;
+    private static final int CURRENT_VERSION = 7;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -10,12 +10,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.awol.etechpro.R;
 import com.awol.etechpro.adapter.TechTipAdapter;
 import com.awol.etechpro.api.RetrofitClient;
@@ -30,7 +37,6 @@ import retrofit2.Response;
 
 public class DetailActivity extends AppCompatActivity {
 
-    // Keys for Intent extras
     public static final String EXTRA_TITLE       = "extra_title";
     public static final String EXTRA_DESCRIPTION = "extra_description";
     public static final String EXTRA_IMAGE_URL   = "extra_image_url";
@@ -39,12 +45,14 @@ public class DetailActivity extends AppCompatActivity {
     public static final String EXTRA_DATE        = "extra_date";
     public static final String EXTRA_TIP_ID      = "extra_tip_id";
 
+    private InterstitialAd interstitialAd;
+    private boolean adShown = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        // Setup toolbar
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar_detail);
         if (toolbar != null) setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
@@ -53,7 +61,6 @@ public class DetailActivity extends AppCompatActivity {
             ab.setTitle("");
         }
 
-        // Get data from intent
         String title      = getIntent().getStringExtra(EXTRA_TITLE);
         String description= getIntent().getStringExtra(EXTRA_DESCRIPTION);
         String imageUrl   = getIntent().getStringExtra(EXTRA_IMAGE_URL);
@@ -62,7 +69,6 @@ public class DetailActivity extends AppCompatActivity {
         String date       = getIntent().getStringExtra(EXTRA_DATE);
         long   currentId  = getIntent().getLongExtra(EXTRA_TIP_ID, -1);
 
-        // Bind views
         ImageView ivImage      = findViewById(R.id.iv_detail_image);
         TextView tvTitle       = findViewById(R.id.tv_detail_title);
         TextView tvDescription = findViewById(R.id.tv_detail_description);
@@ -71,12 +77,10 @@ public class DetailActivity extends AppCompatActivity {
         Button btnWatchVideo   = findViewById(R.id.btn_watch_video);
         Button btnDownload     = findViewById(R.id.btn_download);
 
-        // Set text
         if (title != null)       tvTitle.setText(title);
         if (description != null) tvDescription.setText(description);
         if (date != null)        tvDate.setText(date);
 
-        // Load image with Glide
         if (imageUrl != null && !imageUrl.isEmpty()) {
             Glide.with(this)
                     .load(imageUrl)
@@ -86,33 +90,59 @@ public class DetailActivity extends AppCompatActivity {
                     .into(ivImage);
         }
 
-        // Show Visit Website button if websiteUrl exists
         if (websiteUrl != null && !websiteUrl.isEmpty()) {
             btnWebsite.setVisibility(View.VISIBLE);
-            btnWebsite.setOnClickListener(v -> {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(websiteUrl)));
-            });
+            btnWebsite.setOnClickListener(v ->
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(websiteUrl))));
         }
 
-        // Show Watch Video button if videoLink exists
         if (videoLink != null && !videoLink.isEmpty()) {
             btnWatchVideo.setVisibility(View.VISIBLE);
-            btnWatchVideo.setOnClickListener(v -> {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(videoLink)));
-            });
+            btnWatchVideo.setOnClickListener(v ->
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(videoLink))));
         }
 
-        // Show Open Now button if websiteUrl is a Play Store link
         if (websiteUrl != null && websiteUrl.contains("play.google.com")) {
             btnWebsite.setVisibility(View.GONE);
             btnDownload.setVisibility(View.VISIBLE);
-            btnDownload.setOnClickListener(v -> {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(websiteUrl)));
-            });
+            btnDownload.setOnClickListener(v ->
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(websiteUrl))));
         }
+
+        // Load interstitial ad — shows when More Tips section appears
+        loadInterstitialAd();
 
         // Load More Tips
         loadMoreTips(currentId);
+    }
+
+    private void loadInterstitialAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(this,
+                "ca-app-pub-9678232109126473/2903905988",
+                adRequest,
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd ad) {
+                        interstitialAd = ad;
+                        interstitialAd.setFullScreenContentCallback(
+                                new FullScreenContentCallback() {
+                                    @Override
+                                    public void onAdDismissedFullScreenContent() {
+                                        interstitialAd = null;
+                                    }
+                                    @Override
+                                    public void onAdFailedToShowFullScreenContent(
+                                            @NonNull AdError adError) {
+                                        interstitialAd = null;
+                                    }
+                                });
+                    }
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        interstitialAd = null;
+                    }
+                });
     }
 
     private void loadMoreTips(long currentId) {
@@ -121,7 +151,6 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<TechTip>> call, Response<List<TechTip>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // Filter out the current tip
                     List<TechTip> moreTips = new ArrayList<>();
                     for (TechTip tip : response.body()) {
                         if (tip.getId() == null || tip.getId() != currentId) {
@@ -132,15 +161,21 @@ public class DetailActivity extends AppCompatActivity {
                         LinearLayout layoutMoreTips = findViewById(R.id.layout_more_tips);
                         RecyclerView rvMoreTips     = findViewById(R.id.rv_more_tips);
                         layoutMoreTips.setVisibility(View.VISIBLE);
-                        rvMoreTips.setLayoutManager(new LinearLayoutManager(DetailActivity.this));
-                        rvMoreTips.setAdapter(new TechTipAdapter(DetailActivity.this, moreTips));
+                        rvMoreTips.setLayoutManager(
+                                new LinearLayoutManager(DetailActivity.this));
+                        rvMoreTips.setAdapter(
+                                new TechTipAdapter(DetailActivity.this, moreTips));
+
+                        // Show interstitial ad once when More Tips section appears
+                        if (interstitialAd != null && !adShown) {
+                            adShown = true;
+                            interstitialAd.show(DetailActivity.this);
+                        }
                     }
                 }
             }
             @Override
-            public void onFailure(Call<List<TechTip>> call, Throwable t) {
-                // Silently fail — more tips is optional, don't show error
-            }
+            public void onFailure(Call<List<TechTip>> call, Throwable t) {}
         });
     }
 

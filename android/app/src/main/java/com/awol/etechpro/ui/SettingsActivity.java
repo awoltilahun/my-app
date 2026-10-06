@@ -6,11 +6,14 @@ import android.content.pm.PackageInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +22,10 @@ import androidx.appcompat.widget.SwitchCompat;
 
 import com.awol.etechpro.R;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.File;
@@ -28,7 +35,11 @@ public class SettingsActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "etech_prefs";
     private static final String KEY_DARK   = "dark_mode";
     private static final String KEY_NOTIF  = "notifications_enabled";
-    private static final int CURRENT_VERSION = 8;
+    private static final String KEY_AD_FREE_UNTIL = "ad_free_until";
+    private static final int CURRENT_VERSION = 9;
+
+    private RewardedAd rewardedAd;
+    private TextView tvAdStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +137,15 @@ public class SettingsActivity extends AppCompatActivity {
 
         // ── App Update Checker ────────────────────────────────────
         checkForUpdate();
+
+        // ── Rewarded Ad — Remove Banner ───────────────────────────
+        tvAdStatus = findViewById(R.id.tv_ad_status);
+        LinearLayout btnWatchAd = findViewById(R.id.btn_watch_ad);
+        updateAdStatus(prefs);
+        loadRewardedAd();
+        if (btnWatchAd != null) {
+            btnWatchAd.setOnClickListener(v -> showRewardedAd(prefs));
+        }
     }
 
     // ── Cache Methods ─────────────────────────────────────────────
@@ -174,6 +194,66 @@ public class SettingsActivity extends AppCompatActivity {
             }
         }
         return dir != null && dir.delete();
+    }
+
+    // ── Rewarded Ad Methods ───────────────────────────────────────
+
+    private void loadRewardedAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedAd.load(this,
+                "ca-app-pub-9678232109126473/4544290713",
+                adRequest,
+                new RewardedAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull RewardedAd ad) {
+                        rewardedAd = ad;
+                    }
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError error) {
+                        rewardedAd = null;
+                    }
+                });
+    }
+
+    private void showRewardedAd(SharedPreferences prefs) {
+        // Check if already ad-free
+        long adFreeUntil = prefs.getLong(KEY_AD_FREE_UNTIL, 0);
+        if (System.currentTimeMillis() < adFreeUntil) {
+            long remaining = (adFreeUntil - System.currentTimeMillis()) / 60000;
+            Toast.makeText(this,
+                "Banner already removed! " + remaining + " minutes remaining.",
+                Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (rewardedAd == null) {
+            Toast.makeText(this, "Ad not ready yet. Please try again.", Toast.LENGTH_SHORT).show();
+            loadRewardedAd();
+            return;
+        }
+
+        rewardedAd.show(this, rewardItem -> {
+            // User watched the ad — remove banner for 1 hour
+            long oneHourFromNow = System.currentTimeMillis() + (60 * 60 * 1000);
+            prefs.edit().putLong(KEY_AD_FREE_UNTIL, oneHourFromNow).apply();
+            Toast.makeText(this,
+                "🎉 Banner removed for 1 hour! Thank you.",
+                Toast.LENGTH_LONG).show();
+            updateAdStatus(prefs);
+            rewardedAd = null;
+            loadRewardedAd();
+        });
+    }
+
+    private void updateAdStatus(SharedPreferences prefs) {
+        if (tvAdStatus == null) return;
+        long adFreeUntil = prefs.getLong(KEY_AD_FREE_UNTIL, 0);
+        if (System.currentTimeMillis() < adFreeUntil) {
+            long remaining = (adFreeUntil - System.currentTimeMillis()) / 60000;
+            tvAdStatus.setText("✅ Banner removed! " + remaining + " minutes remaining");
+        } else {
+            tvAdStatus.setText("Watch a short ad to remove the banner for 1 hour");
+        }
     }
 
     // ── Update Checker ────────────────────────────────────────────

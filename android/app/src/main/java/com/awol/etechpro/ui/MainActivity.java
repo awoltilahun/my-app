@@ -2,6 +2,7 @@ package com.awol.etechpro.ui;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,6 +33,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.awol.etechpro.R;
 import com.awol.etechpro.adapter.TechTipAdapter;
 import com.awol.etechpro.api.RetrofitClient;
@@ -59,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
 
     private TechTipAdapter techTipAdapter;
     private List<TechTip> techTipList = new ArrayList<>();
+
+    private AdView adView;
 
     private Handler refreshHandler = new Handler(android.os.Looper.getMainLooper());
     private Runnable refreshRunnable = new Runnable() {
@@ -92,6 +98,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Request notification permission on first launch
         requestNotificationPermission();
+
+        // Initialize AdMob and load banner
+        MobileAds.initialize(this, initializationStatus -> {});
+        adView = findViewById(R.id.adView);
+        // Check if user earned ad-free period
+        SharedPreferences prefs = getSharedPreferences("etech_prefs", MODE_PRIVATE);
+        long adFreeUntil = prefs.getLong("ad_free_until", 0);
+        if (System.currentTimeMillis() < adFreeUntil) {
+            adView.setVisibility(View.GONE);
+        } else {
+            adView.loadAd(new AdRequest.Builder().build());
+        }
 
         if (searchQuery != null && !searchQuery.isEmpty()) {
             etSearch.setText(searchQuery);
@@ -509,6 +527,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (adView != null) adView.resume();
         // Only load data if list is empty
         if (techTipAdapter != null && techTipList.isEmpty()) {
             loadData();
@@ -518,12 +537,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        if (adView != null) adView.pause();
         refreshHandler.removeCallbacks(refreshRunnable);
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
+        if (adView != null) adView.destroy();
         refreshHandler.removeCallbacks(refreshRunnable);
         searchHandler.removeCallbacks(searchRunnable);
         super.onDestroy();

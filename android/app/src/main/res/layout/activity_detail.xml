@@ -24,13 +24,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Full width image -->
+            <!-- Full width image with padding so nothing is hidden -->
             <ImageView
                 android:id="@+id/iv_detail_image"
                 android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                android:scaleType="centerCrop"
+                android:scaleType="fitCenter"
+                android:padding="12dp"
                 android:contentDescription="Detail image"
                 android:background="@color/colorCard" />
 
@@ -88,8 +89,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorTextPrimary"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
+                    android:textSize="15sp"
                     android:lineSpacingExtra="6dp" />
 
             </LinearLayout>
@@ -131,11 +131,11 @@
                 <Button
                     android:id="@+id/btn_download"
                     android:layout_width="match_parent"
-                    android:layout_height="72dp"
+                    android:layout_height="58dp"
                     android:layout_marginTop="8dp"
                     android:text="🚀  Open Now"
                     android:textColor="@color/colorWhite"
-                    android:textSize="19sp"
+                    android:textSize="17sp"
                     android:textStyle="bold"
                     android:backgroundTint="#01875F"
                     android:visibility="gone" />

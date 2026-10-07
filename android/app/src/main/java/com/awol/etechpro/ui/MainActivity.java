@@ -35,7 +35,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 import com.awol.etechpro.R;
 import com.awol.etechpro.adapter.TechTipAdapter;
 import com.awol.etechpro.api.RetrofitClient;
@@ -99,8 +98,7 @@ public class MainActivity extends AppCompatActivity {
         // Request notification permission on first launch
         requestNotificationPermission();
 
-        // Initialize AdMob and load banner
-        MobileAds.initialize(this, initializationStatus -> {});
+        // MobileAds is already initialized in EtechProApp.onCreate() — just load the banner
         adView = findViewById(R.id.adView);
         // Check if user earned ad-free period
         SharedPreferences prefs = getSharedPreferences("etech_prefs", MODE_PRIVATE);

@@ -15,6 +15,7 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import com.awol.etechpro.ui.SettingsActivity;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.appopen.AppOpenAd;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -53,6 +54,14 @@ public class EtechProApp extends Application
                         Log.e(TAG, "Failed to subscribe to FCM topic: all");
                     }
                 });
+
+        // Initialize AdMob SDK here (Application level) so it's ready before any
+        // Activity tries to load ads. The App Open Ad is loaded inside the callback
+        // to guarantee MobileAds is fully initialized first.
+        MobileAds.initialize(this, initializationStatus -> {
+            Log.d(TAG, "AdMob initialized");
+            loadAppOpenAd();
+        });
 
         // Register lifecycle callbacks
         registerActivityLifecycleCallbacks(this);

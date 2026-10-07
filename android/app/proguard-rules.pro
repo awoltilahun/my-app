@@ -26,5 +26,24 @@
 -keep class com.google.firebase.** { *; }
 -dontwarn com.google.firebase.**
 
+# Google Mobile Ads (AdMob) — REQUIRED: without these rules, ads fail silently in release builds
+-keep class com.google.android.gms.ads.** { *; }
+-keep class com.google.ads.** { *; }
+-dontwarn com.google.android.gms.ads.**
+-keep class com.google.android.gms.common.** { *; }
+
+# App Open Ad
+-keep class com.google.android.gms.ads.appopen.** { *; }
+
+# Rewarded Ad
+-keep class com.google.android.gms.ads.rewarded.** { *; }
+
+# Interstitial Ad
+-keep class com.google.android.gms.ads.interstitial.** { *; }
+
+# AdMob initialization
+-keep class com.google.android.gms.ads.initialization.** { *; }
+-keep class com.google.android.gms.ads.MobileAds { *; }
+
 # Keep app model classes
 -keep class com.awol.etechpro.** { *; }

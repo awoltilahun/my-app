@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Required by Google Mobile Ads SDK (play-services-ads 23.x+).
+    This file overrides the AD_SERVICES_CONFIG property that the AdMob SDK injects into
+    the merged AndroidManifest. Your Manifest uses tools:replace="android:resource" on
+    that <property> tag so this file takes precedence.
+
+    Keeping all Privacy Sandbox ad services disabled is the safe default unless your app
+    opts into Privacy Sandbox APIs. This prevents manifest merger failures.
+-->
+<ad-services-config>
+    <attribution-reporting allowAllToAccess="false" />
+    <custom-audiences allowAllToAccess="false" />
+    <protected-signals allowAllToAccess="false" />
+    <ad-selection-service allowAllToAccess="false" />
+</ad-services-config>

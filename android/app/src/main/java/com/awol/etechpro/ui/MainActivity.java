@@ -39,6 +39,10 @@ import com.awol.etechpro.R;
 import com.awol.etechpro.adapter.TechTipAdapter;
 import com.awol.etechpro.api.RetrofitClient;
 import com.awol.etechpro.model.TechTip;
+import com.awol.etechpro.util.UnityAdsManager;
+
+import android.widget.FrameLayout;
+import com.unity3d.services.banners.BannerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private List<TechTip> techTipList = new ArrayList<>();
 
     private AdView adView;
+    private BannerView unityBannerView;
 
     private Handler refreshHandler = new Handler(android.os.Looper.getMainLooper());
     private Runnable refreshRunnable = new Runnable() {
@@ -107,6 +112,12 @@ public class MainActivity extends AppCompatActivity {
             adView.setVisibility(View.GONE);
         } else {
             adView.loadAd(new AdRequest.Builder().build());
+        }
+
+        // Load Unity Ads banner as fallback
+        FrameLayout unityBannerContainer = findViewById(R.id.unity_banner_container);
+        if (unityBannerContainer != null && System.currentTimeMillis() >= adFreeUntil) {
+            unityBannerView = UnityAdsManager.createBanner(this, unityBannerContainer);
         }
 
         if (searchQuery != null && !searchQuery.isEmpty()) {

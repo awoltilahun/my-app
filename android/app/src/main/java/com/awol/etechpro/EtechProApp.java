@@ -13,6 +13,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.awol.etechpro.ui.SettingsActivity;
+import com.awol.etechpro.util.UnityAdsManager;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
@@ -62,6 +63,11 @@ public class EtechProApp extends Application
             Log.d(TAG, "AdMob initialized");
             loadAppOpenAd();
         });
+
+        // Initialize Unity Ads
+        UnityAdsManager.initialize(this);
+        UnityAdsManager.loadInterstitial();
+        UnityAdsManager.loadRewarded();
 
         // Register lifecycle callbacks
         registerActivityLifecycleCallbacks(this);

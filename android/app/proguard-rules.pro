@@ -47,3 +47,9 @@
 
 # Keep app model classes
 -keep class com.awol.etechpro.** { *; }
+
+# Unity Ads
+-keep class com.unity3d.ads.** { *; }
+-keep class com.unity3d.services.** { *; }
+-dontwarn com.unity3d.ads.**
+-dontwarn com.unity3d.services.**

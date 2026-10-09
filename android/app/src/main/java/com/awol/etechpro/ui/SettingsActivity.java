@@ -27,6 +27,7 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.awol.etechpro.util.UnityAdsManager;
 
 import java.io.File;
 
@@ -36,7 +37,7 @@ public class SettingsActivity extends AppCompatActivity {
     private static final String KEY_DARK   = "dark_mode";
     private static final String KEY_NOTIF  = "notifications_enabled";
     private static final String KEY_AD_FREE_UNTIL = "ad_free_until";
-    private static final int CURRENT_VERSION = 10;
+    private static final int CURRENT_VERSION = 11;
 
     private RewardedAd rewardedAd;
     private TextView tvAdStatus;
@@ -229,6 +230,15 @@ public class SettingsActivity extends AppCompatActivity {
         if (rewardedAd == null) {
             Toast.makeText(this, "Ad not ready yet. Please try again.", Toast.LENGTH_SHORT).show();
             loadRewardedAd();
+            // Try Unity Ads rewarded as fallback
+            UnityAdsManager.showRewarded(this, () -> {
+                long oneHourFromNow = System.currentTimeMillis() + (60 * 60 * 1000);
+                prefs.edit().putLong(KEY_AD_FREE_UNTIL, oneHourFromNow).apply();
+                Toast.makeText(this,
+                    "🎉 Banner removed for 1 hour! Thank you.",
+                    Toast.LENGTH_LONG).show();
+                updateAdStatus(prefs);
+            }, null);
             return;
         }
 

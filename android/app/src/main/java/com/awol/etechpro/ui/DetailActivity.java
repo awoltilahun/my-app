@@ -27,6 +27,7 @@ import com.awol.etechpro.R;
 import com.awol.etechpro.adapter.TechTipAdapter;
 import com.awol.etechpro.api.RetrofitClient;
 import com.awol.etechpro.model.TechTip;
+import com.awol.etechpro.util.UnityAdsManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -170,6 +171,10 @@ public class DetailActivity extends AppCompatActivity {
                         if (interstitialAd != null && !adShown) {
                             adShown = true;
                             interstitialAd.show(DetailActivity.this);
+                        } else if (!adShown) {
+                            // AdMob not ready — try Unity Ads interstitial
+                            adShown = true;
+                            UnityAdsManager.showInterstitial(DetailActivity.this, null);
                         }
                     }
                 }

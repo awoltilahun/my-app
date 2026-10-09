@@ -173,6 +173,14 @@
         ads:adSize="BANNER"
         ads:adUnitId="ca-app-pub-9678232109126473/7835659301" />
 
+    <!-- Unity Ads Banner fallback -->
+    <FrameLayout
+        android:id="@+id/unity_banner_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
     <!-- Bottom Navigation -->
     <LinearLayout
         android:id="@+id/bottom_nav"

@@ -143,6 +143,7 @@ public class UnityAdsManager {
             }
             @Override public void onBannerClick(BannerView bannerAdView) {}
             @Override public void onBannerLeftApplication(BannerView bannerAdView) {}
+            @Override public void onBannerShown(BannerView bannerAdView) {}
         });
         container.addView(banner);
         banner.load();

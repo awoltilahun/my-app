@@ -13,6 +13,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.awol.etechpro.ui.SettingsActivity;
+import com.awol.etechpro.util.StartioAdsManager;
 import com.awol.etechpro.util.UnityAdsManager;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.LoadAdError;
@@ -68,6 +69,9 @@ public class EtechProApp extends Application
         UnityAdsManager.initialize(this);
         UnityAdsManager.loadInterstitial();
         UnityAdsManager.loadRewarded();
+
+        // Initialize Start.io
+        StartioAdsManager.initialize(this);
 
         // Register lifecycle callbacks
         registerActivityLifecycleCallbacks(this);

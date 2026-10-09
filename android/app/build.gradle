@@ -9,10 +9,10 @@ android {
 
     defaultConfig {
         applicationId "com.awol.etechpro"
-        minSdk 21
+        minSdk 24
         targetSdk 36
-        versionCode 11
-        versionName "1.1.0"
+        versionCode 13
+        versionName "1.1.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -63,6 +63,9 @@ dependencies {
 
     // Unity Ads
     implementation 'com.unity3d.ads:unity-ads:4.21.0'
+
+    // Start.io (formerly StartApp)
+    implementation 'com.startapp:inapp-sdk:5.+'
 
     // Testing
     testImplementation 'junit:junit:4.13.2'

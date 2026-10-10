@@ -181,6 +181,13 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
+    <!-- Start.io Banner (shows immediately, no approval needed) -->
+    <com.startapp.sdk.ads.banner.Banner
+        android:id="@+id/startio_banner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
     <!-- Bottom Navigation -->
     <LinearLayout
         android:id="@+id/bottom_nav"

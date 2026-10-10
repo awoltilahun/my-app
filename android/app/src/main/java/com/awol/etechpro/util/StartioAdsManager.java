@@ -8,69 +8,65 @@ import android.view.ViewGroup;
 import com.startapp.sdk.ads.banner.Banner;
 import com.startapp.sdk.adsbase.StartAppAd;
 import com.startapp.sdk.adsbase.StartAppSDK;
-import com.startapp.sdk.adsbase.adListeners.AdEventListener;
-import com.startapp.sdk.adsbase.model.AdPreferences;
+import com.startapp.sdk.adsbase.VideoListener;
 
 public class StartioAdsManager {
 
     private static final String TAG = "StartioAdsManager";
+    private static final String APP_ID = "209129161";
 
     // ── Initialize ────────────────────────────────────────────────
 
     public static void initialize(Context context) {
-        // SDK is auto-initialized via manifest meta-data (APPLICATION_ID)
-        // Just log confirmation
-        Log.d(TAG, "Start.io SDK ready (App ID: 209129161)");
+        // Explicitly initialize with App ID to avoid "undefined" issue
+        StartAppSDK.init(context, APP_ID, false);
+        StartAppSDK.setTestAdsEnabled(false);
+        Log.d(TAG, "Start.io SDK initialized with App ID: " + APP_ID);
     }
 
     // ── Interstitial ──────────────────────────────────────────────
 
     public static void showInterstitial(Activity activity, Runnable onComplete) {
-        StartAppAd startAppAd = new StartAppAd(activity);
-        startAppAd.loadAd(new AdEventListener() {
-            @Override
-            public void onReceiveAd(com.startapp.sdk.adsbase.Ad ad) {
-                startAppAd.showAd();
-                if (onComplete != null) onComplete.run();
-            }
-            @Override
-            public void onFailedToReceiveAd(com.startapp.sdk.adsbase.Ad ad) {
-                Log.e(TAG, "Interstitial failed to load");
-                if (onComplete != null) onComplete.run();
-            }
-        });
+        try {
+            StartAppAd.showAd(activity);
+            Log.d(TAG, "Interstitial shown");
+        } catch (Exception e) {
+            Log.e(TAG, "Interstitial error: " + e.getMessage());
+        }
+        if (onComplete != null) onComplete.run();
     }
 
     // ── Rewarded ──────────────────────────────────────────────────
 
     public static void showRewarded(Activity activity,
             Runnable onRewarded, Runnable onComplete) {
-        StartAppAd startAppAd = new StartAppAd(activity);
-        startAppAd.setVideoListener(() -> {
-            // User completed watching the video — grant reward
-            Log.d(TAG, "Rewarded video completed");
-            if (onRewarded != null) onRewarded.run();
-        });
-        startAppAd.loadAd(StartAppAd.AdMode.REWARDED_VIDEO,
-                new AdEventListener() {
-                    @Override
-                    public void onReceiveAd(com.startapp.sdk.adsbase.Ad ad) {
-                        startAppAd.showAd();
-                        if (onComplete != null) onComplete.run();
-                    }
-                    @Override
-                    public void onFailedToReceiveAd(com.startapp.sdk.adsbase.Ad ad) {
-                        Log.e(TAG, "Rewarded failed to load");
-                        if (onComplete != null) onComplete.run();
-                    }
-                });
+        try {
+            StartAppAd startAppAd = new StartAppAd(activity);
+            startAppAd.setVideoListener(new VideoListener() {
+                @Override
+                public void onVideoCompleted() {
+                    Log.d(TAG, "Rewarded video completed");
+                    if (onRewarded != null) onRewarded.run();
+                }
+            });
+            startAppAd.loadAd(StartAppAd.AdMode.REWARDED_VIDEO);
+            startAppAd.showAd();
+        } catch (Exception e) {
+            Log.e(TAG, "Rewarded error: " + e.getMessage());
+        }
+        if (onComplete != null) onComplete.run();
     }
 
     // ── Banner ────────────────────────────────────────────────────
 
     public static Banner createBanner(Activity activity, ViewGroup container) {
-        Banner banner = new Banner(activity);
-        container.addView(banner);
-        return banner;
+        try {
+            Banner banner = new Banner(activity);
+            container.addView(banner);
+            return banner;
+        } catch (Exception e) {
+            Log.e(TAG, "Banner error: " + e.getMessage());
+            return null;
+        }
     }
 }

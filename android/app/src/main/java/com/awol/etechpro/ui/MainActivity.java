@@ -83,8 +83,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Allow content to draw behind system bars
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        // Fit system windows — prevents content from going behind status bar
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
         setContentView(R.layout.activity_main);
 
         String searchQuery = getIntent().getStringExtra("search_query");

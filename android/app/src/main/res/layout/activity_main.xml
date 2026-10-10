@@ -188,6 +188,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
+    <!-- Divider above bottom nav -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorDivider" />
+
     <!-- Bottom Navigation -->
     <LinearLayout
         android:id="@+id/bottom_nav"
@@ -195,9 +201,7 @@
         android:layout_height="68dp"
         android:background="@color/colorNavBar"
         android:orientation="horizontal"
-        android:elevation="12dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp">
+        android:elevation="12dp">
 
         <LinearLayout
             android:id="@+id/nav_home"

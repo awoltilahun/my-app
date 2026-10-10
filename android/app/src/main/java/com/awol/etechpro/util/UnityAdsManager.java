@@ -134,12 +134,24 @@ public class UnityAdsManager {
             public void onBannerLoaded(BannerView bannerAdView) {
                 Log.d(TAG, "Banner loaded");
                 container.setVisibility(android.view.View.VISIBLE);
+                // Hide Start.io banner since Unity loaded successfully
+                android.view.View startioBanner = activity.findViewById(
+                        com.awol.etechpro.R.id.startio_banner);
+                if (startioBanner != null) {
+                    startioBanner.setVisibility(android.view.View.GONE);
+                }
             }
             @Override
             public void onBannerFailedToLoad(BannerView bannerAdView,
                     BannerErrorInfo errorInfo) {
                 Log.e(TAG, "Banner failed: " + errorInfo.errorMessage);
                 container.setVisibility(android.view.View.GONE);
+                // Show Start.io banner as fallback
+                android.view.View startioBanner = activity.findViewById(
+                        com.awol.etechpro.R.id.startio_banner);
+                if (startioBanner != null) {
+                    startioBanner.setVisibility(android.view.View.VISIBLE);
+                }
             }
             @Override public void onBannerClick(BannerView bannerAdView) {}
             @Override public void onBannerLeftApplication(BannerView bannerAdView) {}

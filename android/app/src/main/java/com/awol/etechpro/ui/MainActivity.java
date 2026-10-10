@@ -116,8 +116,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Load Unity Ads banner as fallback
         FrameLayout unityBannerContainer = findViewById(R.id.unity_banner_container);
+        // Hide Start.io banner by default — only show if Unity fails
+        com.startapp.sdk.ads.banner.Banner startioBanner = 
+            findViewById(R.id.startio_banner);
         if (unityBannerContainer != null && System.currentTimeMillis() >= adFreeUntil) {
             unityBannerView = UnityAdsManager.createBanner(this, unityBannerContainer);
+            // If Unity banner fails to load, show Start.io banner instead
+            if (unityBannerView == null && startioBanner != null) {
+                startioBanner.setVisibility(View.VISIBLE);
+            } else if (startioBanner != null) {
+                // Unity is loading — hide Start.io to avoid double banner
+                startioBanner.setVisibility(View.GONE);
+            }
         }
 
         if (searchQuery != null && !searchQuery.isEmpty()) {

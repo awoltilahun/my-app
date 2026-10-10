@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Fit system windows — prevents content from going behind status bar
+        // System handles status bar and nav bar spacing automatically
         WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
         setContentView(R.layout.activity_main);
 
@@ -93,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
         // No toolbar — using custom search bar with icon popup menu
 
         initViews();
-        applyWindowInsets();
         setupRecyclerView();
         setupSearchBar();
         // Prevent search bar from getting focus on startup

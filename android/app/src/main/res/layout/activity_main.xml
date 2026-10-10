@@ -195,7 +195,9 @@
         android:layout_height="68dp"
         android:background="@color/colorNavBar"
         android:orientation="horizontal"
-        android:elevation="12dp">
+        android:elevation="12dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
 
         <LinearLayout
             android:id="@+id/nav_home"

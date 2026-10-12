@@ -61,8 +61,11 @@ public class StartioAdsManager {
 
     public static Banner createBanner(Activity activity, ViewGroup container) {
         try {
+            // Create banner programmatically AFTER SDK init
+            // to ensure App ID is set before any ad request
             Banner banner = new Banner(activity);
             container.addView(banner);
+            container.setVisibility(android.view.View.VISIBLE);
             return banner;
         } catch (Exception e) {
             Log.e(TAG, "Banner error: " + e.getMessage());

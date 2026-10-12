@@ -28,7 +28,7 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-9678232109126473~7295854829" />
 
-        <!-- Start.io (formerly StartApp) -->
+        <!-- Start.io App ID -->
         <meta-data
             android:name="com.startapp.sdk.APPLICATION_ID"
             android:value="209129161" />

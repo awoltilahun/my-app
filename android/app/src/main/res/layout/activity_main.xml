@@ -181,12 +181,13 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
-    <!-- Start.io Banner (shows immediately, no approval needed) -->
-    <com.startapp.sdk.ads.banner.Banner
-        android:id="@+id/startio_banner"
-        android:layout_width="wrap_content"
+    <!-- Start.io Banner (created programmatically after SDK init) -->
+    <FrameLayout
+        android:id="@+id/startio_banner_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
     <!-- Divider above bottom nav -->
     <View

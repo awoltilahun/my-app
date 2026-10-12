@@ -39,6 +39,7 @@ import com.awol.etechpro.R;
 import com.awol.etechpro.adapter.TechTipAdapter;
 import com.awol.etechpro.api.RetrofitClient;
 import com.awol.etechpro.model.TechTip;
+import com.awol.etechpro.util.StartioAdsManager;
 import com.awol.etechpro.util.UnityAdsManager;
 
 import android.widget.FrameLayout;
@@ -115,17 +116,22 @@ public class MainActivity extends AppCompatActivity {
 
         // Load Unity Ads banner as fallback
         FrameLayout unityBannerContainer = findViewById(R.id.unity_banner_container);
-        // Hide Start.io banner by default — only show if Unity fails
-        com.startapp.sdk.ads.banner.Banner startioBanner = 
-            findViewById(R.id.startio_banner);
-        if (unityBannerContainer != null && System.currentTimeMillis() >= adFreeUntil) {
-            unityBannerView = UnityAdsManager.createBanner(this, unityBannerContainer);
-            // If Unity banner fails to load, show Start.io banner instead
-            if (unityBannerView == null && startioBanner != null) {
-                startioBanner.setVisibility(View.VISIBLE);
-            } else if (startioBanner != null) {
-                // Unity is loading — hide Start.io to avoid double banner
-                startioBanner.setVisibility(View.GONE);
+        FrameLayout startioBannerContainer = findViewById(R.id.startio_banner_container);
+
+        if (System.currentTimeMillis() >= adFreeUntil) {
+            // Create Start.io banner programmatically AFTER SDK init
+            // to ensure App ID is correctly passed
+            if (startioBannerContainer != null) {
+                StartioAdsManager.createBanner(this, startioBannerContainer);
+            }
+            // Also try Unity — if it loads it will hide Start.io
+            if (unityBannerContainer != null) {
+                unityBannerView = UnityAdsManager.createBanner(this, unityBannerContainer);
+            }
+        } else {
+            // Ad free period — hide all banners
+            if (startioBannerContainer != null) {
+                startioBannerContainer.setVisibility(View.GONE);
             }
         }
 

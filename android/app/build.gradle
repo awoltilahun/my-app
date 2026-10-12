@@ -68,7 +68,7 @@ dependencies {
     implementation 'com.startapp:inapp-sdk:5.+'
 
     // Meta Audience Network
-    implementation 'com.facebook.android:audience-network-sdk:6.+'
+    implementation 'com.facebook.android:audience-network-sdk:6.17.0'
 
     // Testing
     testImplementation 'junit:junit:4.13.2'

@@ -39,6 +39,7 @@ import com.awol.etechpro.R;
 import com.awol.etechpro.adapter.TechTipAdapter;
 import com.awol.etechpro.api.RetrofitClient;
 import com.awol.etechpro.model.TechTip;
+import com.awol.etechpro.util.MetaAdsManager;
 import com.awol.etechpro.util.StartioAdsManager;
 import com.awol.etechpro.util.UnityAdsManager;
 
@@ -119,8 +120,12 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout startioBannerContainer = findViewById(R.id.startio_banner_container);
 
         if (System.currentTimeMillis() >= adFreeUntil) {
+            // Load Meta banner (highest CPM)
+            FrameLayout metaBannerContainer = findViewById(R.id.meta_banner_container);
+            if (metaBannerContainer != null) {
+                MetaAdsManager.loadBanner(this, metaBannerContainer);
+            }
             // Create Start.io banner programmatically AFTER SDK init
-            // to ensure App ID is correctly passed
             if (startioBannerContainer != null) {
                 StartioAdsManager.createBanner(this, startioBannerContainer);
             }

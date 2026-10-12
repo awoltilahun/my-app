@@ -27,6 +27,7 @@ import com.awol.etechpro.R;
 import com.awol.etechpro.adapter.TechTipAdapter;
 import com.awol.etechpro.api.RetrofitClient;
 import com.awol.etechpro.model.TechTip;
+import com.awol.etechpro.util.MetaAdsManager;
 import com.awol.etechpro.util.StartioAdsManager;
 import com.awol.etechpro.util.UnityAdsManager;
 
@@ -168,17 +169,16 @@ public class DetailActivity extends AppCompatActivity {
                         rvMoreTips.setAdapter(
                                 new TechTipAdapter(DetailActivity.this, moreTips));
 
-                        // Show interstitial — AdMob first, Unity second, Start.io third
+                        // Show interstitial — AdMob first, Meta second, Unity third, Start.io fourth
                         if (interstitialAd != null && !adShown) {
                             adShown = true;
                             interstitialAd.show(DetailActivity.this);
+                        } else if (!adShown && MetaAdsManager.isInterstitialReady()) {
+                            adShown = true;
+                            MetaAdsManager.showInterstitial(DetailActivity.this, null);
                         } else if (!adShown) {
                             adShown = true;
-                            // Try Unity Ads first
-                            UnityAdsManager.showInterstitial(DetailActivity.this, () -> {
-                                // If Unity also fails, Start.io will show automatically
-                            });
-                            // Start.io as additional fallback
+                            UnityAdsManager.showInterstitial(DetailActivity.this, null);
                             StartioAdsManager.showInterstitial(DetailActivity.this, null);
                         }
                     }

@@ -13,6 +13,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.awol.etechpro.ui.SettingsActivity;
+import com.awol.etechpro.util.MetaAdsManager;
 import com.awol.etechpro.util.StartioAdsManager;
 import com.awol.etechpro.util.UnityAdsManager;
 import com.google.android.gms.ads.AdRequest;
@@ -72,6 +73,9 @@ public class EtechProApp extends Application
 
         // Initialize Start.io
         StartioAdsManager.initialize(this);
+
+        // Initialize Meta Audience Network
+        MetaAdsManager.initialize(this);
 
         // Register lifecycle callbacks
         registerActivityLifecycleCallbacks(this);

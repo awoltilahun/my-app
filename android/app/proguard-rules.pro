@@ -61,3 +61,8 @@
 -dontwarn android.webkit.JavascriptInterface
 -dontwarn com.startapp.**
 -dontwarn org.jetbrains.annotations.**
+
+# Meta Audience Network
+-keep class com.facebook.** { *; }
+-keep class com.facebook.ads.** { *; }
+-dontwarn com.facebook.**

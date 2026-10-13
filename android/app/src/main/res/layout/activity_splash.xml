@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:text="Etech Pro"
         android:textColor="@color/colorBlue"
-        android:textSize="28sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="8dp" />
 
@@ -27,6 +27,6 @@
         android:layout_height="wrap_content"
         android:text="Powered by Abdi Technology"
         android:textColor="@color/colorTextSecondary"
-        android:textSize="14sp" />
+        android:textSize="13sp" />
 
 </LinearLayout>

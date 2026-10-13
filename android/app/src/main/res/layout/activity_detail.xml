@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     android:background="@color/colorBackground">
 
     <!-- Toolbar with back button -->
@@ -48,7 +49,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorTextPrimary"
-                    android:textSize="22sp"
+                    android:textSize="17sp"
                     android:textStyle="bold"
                     android:lineSpacingExtra="2dp" />
 
@@ -89,7 +90,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorTextPrimary"
-                    android:textSize="15sp"
+                    android:textSize="13sp"
                     android:lineSpacingExtra="6dp" />
 
             </LinearLayout>
@@ -106,10 +107,10 @@
                 <Button
                     android:id="@+id/btn_website"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="48dp"
                     android:text="Visit Website"
                     android:textColor="@color/colorTextPrimary"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textStyle="bold"
                     android:backgroundTint="@color/colorBlue"
                     android:visibility="gone" />
@@ -118,11 +119,11 @@
                 <Button
                     android:id="@+id/btn_watch_video"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="48dp"
                     android:layout_marginTop="8dp"
                     android:text="▶  Watch Video"
                     android:textColor="@color/colorTextPrimary"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textStyle="bold"
                     android:backgroundTint="#CC0000"
                     android:visibility="gone" />
@@ -131,11 +132,11 @@
                 <Button
                     android:id="@+id/btn_download"
                     android:layout_width="match_parent"
-                    android:layout_height="58dp"
+                    android:layout_height="48dp"
                     android:layout_marginTop="8dp"
                     android:text="🚀  Open Now"
                     android:textColor="@color/colorWhite"
-                    android:textSize="17sp"
+                    android:textSize="14sp"
                     android:textStyle="bold"
                     android:backgroundTint="#01875F"
                     android:visibility="gone" />

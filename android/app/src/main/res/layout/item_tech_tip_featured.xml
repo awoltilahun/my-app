@@ -14,21 +14,22 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Large Image -->
+        <!-- Large Image — fixed height so it never gets pushed by text -->
         <ImageView
             android:id="@+id/iv_featured_image"
             android:layout_width="match_parent"
-            android:layout_height="240dp"
+            android:layout_height="200dp"
             android:scaleType="centerCrop"
             android:contentDescription="Featured image"
-            android:background="@color/colorCard" />
+            android:background="@color/colorCard"
+            android:adjustViewBounds="false" />
 
-        <!-- Content -->
+        <!-- Content — grows with text, never overlaps image -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="14dp">
+            android:padding="12dp">
 
             <TextView
                 android:id="@+id/tv_featured_title"
@@ -44,24 +45,24 @@
                 android:id="@+id/tv_featured_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="4dp"
                 android:textColor="@color/colorTextSecondary"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:maxLines="2"
                 android:ellipsize="end"
                 android:lineSpacingExtra="2dp" />
 
-            <!-- Date + More button row -->
+            <!-- Date row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="8dp">
 
                 <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
                     android:src="@android:drawable/ic_menu_recent_history"
                     android:layout_marginEnd="4dp" />
 
@@ -71,12 +72,11 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textColor="@color/colorBlue"
-                    android:textSize="12sp"
-                    android:text="August 24, 2026" />
+                    android:textSize="11sp" />
 
                 <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:src="@android:drawable/ic_menu_more" />
 
             </LinearLayout>

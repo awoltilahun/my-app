@@ -33,6 +33,11 @@
             android:name="com.startapp.sdk.APPLICATION_ID"
             android:value="209129161" />
 
+        <!-- Disable Start.io auto-initialization — we initialize manually in code -->
+        <meta-data
+            android:name="com.startapp.sdk.AUTO_INIT"
+            android:value="false" />
+
         <!-- Disable Start.io splash ad — we have our own splash screen -->
         <meta-data
             android:name="com.startapp.sdk.SPLASH_ENABLED"

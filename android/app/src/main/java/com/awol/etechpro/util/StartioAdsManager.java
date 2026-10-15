@@ -14,19 +14,31 @@ public class StartioAdsManager {
 
     private static final String TAG = "StartioAdsManager";
     private static final String APP_ID = "209129161";
+    private static boolean initialized = false;
 
     // ── Initialize ────────────────────────────────────────────────
 
     public static void initialize(Context context) {
-        // Explicitly initialize with App ID to avoid "undefined" issue
-        StartAppSDK.init(context, APP_ID, false);
+        if (initialized) {
+            Log.d(TAG, "Start.io already initialized, skipping");
+            return;
+        }
+        // Force initialize with correct App ID
+        // AUTO_INIT is disabled in manifest to prevent early init with no App ID
+        StartAppSDK.init(context.getApplicationContext(), APP_ID, false);
         StartAppSDK.setTestAdsEnabled(false);
+        initialized = true;
         Log.d(TAG, "Start.io SDK initialized with App ID: " + APP_ID);
     }
 
     // ── Interstitial ──────────────────────────────────────────────
 
     public static void showInterstitial(Activity activity, Runnable onComplete) {
+        if (!initialized) {
+            Log.e(TAG, "Start.io not initialized!");
+            if (onComplete != null) onComplete.run();
+            return;
+        }
         try {
             StartAppAd.showAd(activity);
             Log.d(TAG, "Interstitial shown");
@@ -40,6 +52,11 @@ public class StartioAdsManager {
 
     public static void showRewarded(Activity activity,
             Runnable onRewarded, Runnable onComplete) {
+        if (!initialized) {
+            Log.e(TAG, "Start.io not initialized!");
+            if (onComplete != null) onComplete.run();
+            return;
+        }
         try {
             StartAppAd startAppAd = new StartAppAd(activity);
             startAppAd.setVideoListener(new VideoListener() {
@@ -60,9 +77,11 @@ public class StartioAdsManager {
     // ── Banner ────────────────────────────────────────────────────
 
     public static Banner createBanner(Activity activity, ViewGroup container) {
+        if (!initialized) {
+            Log.e(TAG, "Start.io not initialized!");
+            return null;
+        }
         try {
-            // Create banner programmatically AFTER SDK init
-            // to ensure App ID is set before any ad request
             Banner banner = new Banner(activity);
             container.addView(banner);
             container.setVisibility(android.view.View.VISIBLE);

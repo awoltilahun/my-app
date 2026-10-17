@@ -10,32 +10,68 @@ import com.startapp.sdk.adsbase.StartAppAd;
 import com.startapp.sdk.adsbase.StartAppSDK;
 import com.startapp.sdk.adsbase.VideoListener;
 
+/**
+ * Start.io (formerly StartApp) SDK wrapper.
+ *
+ * SDK version: 5.3.1 (pinned in build.gradle)
+ * App ID:      209129161
+ *
+ * Initialization strategy:
+ *  - StartAppInitProvider ContentProvider is removed via tools:node="remove"
+ *    in AndroidManifest.xml so the SDK CANNOT auto-initialize before
+ *    Application.onCreate() runs.
+ *  - StartAppSDK.init() is called explicitly in EtechProApp.onCreate(),
+ *    which is the first code that runs after all ContentProviders complete.
+ *  - The `initialized` flag prevents any ad call before init completes.
+ */
 public class StartioAdsManager {
 
     private static final String TAG = "StartioAdsManager";
-    private static final String APP_ID = "209129161";
+    public  static final String APP_ID = "209129161";
     private static boolean initialized = false;
 
     // ── Initialize ────────────────────────────────────────────────
 
+    /**
+     * Must be called in Application.onCreate() before any Activity starts.
+     * StartAppSDK.init() is synchronous — init is complete when this returns.
+     */
     public static void initialize(Context context) {
         if (initialized) {
-            Log.d(TAG, "Start.io already initialized, skipping");
+            Log.d(TAG, "Already initialized — skipping duplicate call");
             return;
         }
-        // Force initialize with correct App ID
-        // AUTO_INIT is disabled in manifest to prevent early init with no App ID
-        StartAppSDK.init(context.getApplicationContext(), APP_ID, false);
-        StartAppSDK.setTestAdsEnabled(false);
-        initialized = true;
-        Log.d(TAG, "Start.io SDK initialized with App ID: " + APP_ID);
+
+        try {
+            // Pass APPLICATION context to avoid Activity leaks.
+            // Third param = false → disable test ads in production.
+            StartAppSDK.init(context.getApplicationContext(), APP_ID, false);
+            StartAppSDK.setTestAdsEnabled(false);
+            initialized = true;
+
+            // Confirm App ID was accepted by reading it back from the SDK
+            String confirmedId = StartAppSDK.getAppID();
+            if (APP_ID.equals(confirmedId)) {
+                Log.d(TAG, "✅ Start.io initialized — App ID confirmed: " + confirmedId);
+            } else {
+                Log.e(TAG, "⚠️ App ID mismatch! Expected: " + APP_ID
+                        + " — SDK reports: " + confirmedId);
+            }
+
+        } catch (Exception e) {
+            Log.e(TAG, "❌ Start.io init failed: " + e.getMessage(), e);
+        }
+    }
+
+    public static boolean isInitialized() {
+        return initialized;
     }
 
     // ── Interstitial ──────────────────────────────────────────────
 
     public static void showInterstitial(Activity activity, Runnable onComplete) {
         if (!initialized) {
-            Log.e(TAG, "Start.io not initialized!");
+            Log.e(TAG, "showInterstitial called before init — skipping");
             if (onComplete != null) onComplete.run();
             return;
         }
@@ -53,7 +89,7 @@ public class StartioAdsManager {
     public static void showRewarded(Activity activity,
             Runnable onRewarded, Runnable onComplete) {
         if (!initialized) {
-            Log.e(TAG, "Start.io not initialized!");
+            Log.e(TAG, "showRewarded called before init — skipping");
             if (onComplete != null) onComplete.run();
             return;
         }
@@ -62,7 +98,7 @@ public class StartioAdsManager {
             startAppAd.setVideoListener(new VideoListener() {
                 @Override
                 public void onVideoCompleted() {
-                    Log.d(TAG, "Rewarded video completed");
+                    Log.d(TAG, "Rewarded video completed — granting reward");
                     if (onRewarded != null) onRewarded.run();
                 }
             });
@@ -76,18 +112,23 @@ public class StartioAdsManager {
 
     // ── Banner ────────────────────────────────────────────────────
 
+    /**
+     * Creates a banner programmatically AFTER SDK init.
+     * Never call this before initialize() completes.
+     */
     public static Banner createBanner(Activity activity, ViewGroup container) {
         if (!initialized) {
-            Log.e(TAG, "Start.io not initialized!");
+            Log.e(TAG, "createBanner called before init — skipping");
             return null;
         }
         try {
             Banner banner = new Banner(activity);
             container.addView(banner);
             container.setVisibility(android.view.View.VISIBLE);
+            Log.d(TAG, "Banner created for App ID: " + APP_ID);
             return banner;
         } catch (Exception e) {
-            Log.e(TAG, "Banner error: " + e.getMessage());
+            Log.e(TAG, "Banner creation error: " + e.getMessage());
             return null;
         }
     }

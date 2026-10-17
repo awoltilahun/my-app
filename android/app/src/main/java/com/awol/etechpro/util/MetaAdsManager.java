@@ -14,8 +14,6 @@ import com.facebook.ads.AdView;
 import com.facebook.ads.AudienceNetworkAds;
 import com.facebook.ads.InterstitialAd;
 import com.facebook.ads.InterstitialAdListener;
-import com.facebook.ads.RewardedVideoAd;
-import com.facebook.ads.RewardedVideoAdListener;
 
 public class MetaAdsManager {
 
@@ -28,7 +26,6 @@ public class MetaAdsManager {
     public static final String PLACEMENT_REWARDED     = "1780406383290238_1780412633289613";
 
     private static InterstitialAd interstitialAd;
-    private static RewardedVideoAd rewardedAd;
 
     // ── Initialize ────────────────────────────────────────────────
 
@@ -103,60 +100,17 @@ public class MetaAdsManager {
     // ── Rewarded ──────────────────────────────────────────────────
 
     public static void loadRewarded(Context context) {
-        rewardedAd = new RewardedVideoAd(context, PLACEMENT_REWARDED);
-        rewardedAd.loadAd(rewardedAd.buildLoadAdConfig()
-                .withAdListener(new RewardedVideoAdListener() {
-                    @Override
-                    public void onRewardedVideoCompleted() {
-                        Log.d(TAG, "Meta rewarded completed");
-                    }
-                    @Override
-                    public void onLoggingImpression(Ad ad) {}
-                    @Override
-                    public void onRewardedVideoClosed() {
-                        loadRewarded(context); // preload next
-                    }
-                    @Override
-                    public void onError(Ad ad, AdError error) {
-                        Log.e(TAG, "Meta rewarded failed: " + error.getErrorMessage());
-                    }
-                    @Override
-                    public void onAdLoaded(Ad ad) {
-                        Log.d(TAG, "Meta rewarded loaded");
-                    }
-                    @Override public void onAdClicked(Ad ad) {}
-                })
-                .build());
+        // Note: Rewarded Interstitial placement used here
+        // Meta SDK RewardedVideoAd does not support Rewarded Interstitial format
+        // Skipping Meta rewarded — use Unity/AdMob rewarded instead
+        Log.d(TAG, "Meta rewarded skipped — placement format mismatch");
     }
 
     public static void showRewarded(Activity activity,
             Runnable onRewarded, Runnable onComplete) {
-        if (rewardedAd != null && rewardedAd.isAdLoaded()) {
-            rewardedAd.loadAd(rewardedAd.buildLoadAdConfig()
-                    .withAdListener(new RewardedVideoAdListener() {
-                        @Override
-                        public void onRewardedVideoCompleted() {
-                            if (onRewarded != null) onRewarded.run();
-                        }
-                        @Override public void onLoggingImpression(Ad ad) {}
-                        @Override
-                        public void onRewardedVideoClosed() {
-                            if (onComplete != null) onComplete.run();
-                            loadRewarded(activity);
-                        }
-                        @Override
-                        public void onError(Ad ad, AdError error) {
-                            if (onComplete != null) onComplete.run();
-                        }
-                        @Override public void onAdLoaded(Ad ad) {}
-                        @Override public void onAdClicked(Ad ad) {}
-                    })
-                    .build());
-            rewardedAd.show();
-        } else {
-            Log.e(TAG, "Meta rewarded not ready");
-            if (onComplete != null) onComplete.run();
-        }
+        // Meta rewarded not available — fall through to Unity/AdMob
+        Log.d(TAG, "Meta rewarded not available — using fallback");
+        if (onComplete != null) onComplete.run();
     }
 
     public static boolean isInterstitialReady() {

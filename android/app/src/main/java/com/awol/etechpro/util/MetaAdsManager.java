@@ -33,12 +33,9 @@ public class MetaAdsManager {
     // ── Initialize ────────────────────────────────────────────────
 
     public static void initialize(Context context) {
-        // Enable test ads for your device during development
-        // The device hash appears in Logcat when SDK initializes
-        // Look for: "Test mode device hash: XXXXXXXX"
-        AdSettings.setTestMode(true);
+        // Test mode OFF — production build
         AudienceNetworkAds.initialize(context);
-        Log.d(TAG, "Meta Audience Network initialized (test mode ON)");
+        Log.d(TAG, "Meta Audience Network initialized");
         // Preload interstitial and rewarded
         loadInterstitial(context);
         loadRewarded(context);

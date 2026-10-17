@@ -48,15 +48,7 @@ public class StartioAdsManager {
             StartAppSDK.init(context.getApplicationContext(), APP_ID, false);
             StartAppSDK.setTestAdsEnabled(false);
             initialized = true;
-
-            // Confirm App ID was accepted by reading it back from the SDK
-            String confirmedId = StartAppSDK.getAppID();
-            if (APP_ID.equals(confirmedId)) {
-                Log.d(TAG, "✅ Start.io initialized — App ID confirmed: " + confirmedId);
-            } else {
-                Log.e(TAG, "⚠️ App ID mismatch! Expected: " + APP_ID
-                        + " — SDK reports: " + confirmedId);
-            }
+            Log.d(TAG, "✅ Start.io initialized with App ID: " + APP_ID);
 
         } catch (Exception e) {
             Log.e(TAG, "❌ Start.io init failed: " + e.getMessage(), e);

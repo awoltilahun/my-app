@@ -6,17 +6,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.startapp.sdk.ads.banner.BannerCreator;
 import com.startapp.sdk.ads.banner.BannerFormat;
 import com.startapp.sdk.ads.banner.BannerRequest;
-import com.startapp.sdk.adsbase.Ad;
 import com.startapp.sdk.adsbase.StartAppAd;
 import com.startapp.sdk.adsbase.StartAppSDK;
 import com.startapp.sdk.adsbase.VideoListener;
-import com.startapp.sdk.adsbase.adListeners.AdEventListener;
 
 /**
  * Start.io (formerly StartApp) SDK wrapper.
@@ -52,15 +46,7 @@ public class StartioAdsManager {
         }
         try {
             StartAppSDK.init(context.getApplicationContext(), APP_ID, false);
-
-            // Enable test ads in debug builds only
-            if (com.awol.etechpro.BuildConfig.DEBUG) {
-                StartAppSDK.setTestAdsEnabled(true);
-                Log.d(TAG, "⚠️  Test ads ENABLED (debug build)");
-            } else {
-                StartAppSDK.setTestAdsEnabled(false);
-            }
-
+            StartAppSDK.setTestAdsEnabled(false);
             initialized = true;
             Log.d(TAG, "✅ Start.io initialized with App ID: " + APP_ID);
 
@@ -117,20 +103,13 @@ public class StartioAdsManager {
             if (onComplete != null) onComplete.run();
             return;
         }
-        StartAppAd interstitialAd = new StartAppAd(activity);
-        interstitialAd.loadAd(new AdEventListener() {
-            @Override
-            public void onReceiveAd(@NonNull Ad ad) {
-                Log.d(TAG, "Interstitial loaded — showing");
-                interstitialAd.showAd();
-                if (onComplete != null) onComplete.run();
-            }
-            @Override
-            public void onFailedToReceiveAd(@Nullable Ad ad) {
-                Log.e(TAG, "Interstitial failed to load");
-                if (onComplete != null) onComplete.run();
-            }
-        });
+        try {
+            StartAppAd.showAd(activity);
+            Log.d(TAG, "Interstitial shown");
+        } catch (Exception e) {
+            Log.e(TAG, "Interstitial error: " + e.getMessage());
+        }
+        if (onComplete != null) onComplete.run();
     }
 
     // ── Rewarded ──────────────────────────────────────────────────
@@ -142,26 +121,20 @@ public class StartioAdsManager {
             if (onComplete != null) onComplete.run();
             return;
         }
-        StartAppAd rewardedAd = new StartAppAd(activity);
-        rewardedAd.setVideoListener(new VideoListener() {
-            @Override
-            public void onVideoCompleted() {
-                Log.d(TAG, "Rewarded video completed — granting reward");
-                if (onRewarded != null) onRewarded.run();
-            }
-        });
-        rewardedAd.loadAd(StartAppAd.AdMode.REWARDED_VIDEO, new AdEventListener() {
-            @Override
-            public void onReceiveAd(@NonNull Ad ad) {
-                Log.d(TAG, "Rewarded loaded — showing");
-                rewardedAd.showAd();
-                if (onComplete != null) onComplete.run();
-            }
-            @Override
-            public void onFailedToReceiveAd(@Nullable Ad ad) {
-                Log.e(TAG, "Rewarded failed to load");
-                if (onComplete != null) onComplete.run();
-            }
-        });
+        try {
+            StartAppAd rewardedAd = new StartAppAd(activity);
+            rewardedAd.setVideoListener(new VideoListener() {
+                @Override
+                public void onVideoCompleted() {
+                    Log.d(TAG, "Rewarded video completed — granting reward");
+                    if (onRewarded != null) onRewarded.run();
+                }
+            });
+            rewardedAd.loadAd(StartAppAd.AdMode.REWARDED_VIDEO);
+            rewardedAd.showAd();
+        } catch (Exception e) {
+            Log.e(TAG, "Rewarded error: " + e.getMessage());
+        }
+        if (onComplete != null) onComplete.run();
     }
 }

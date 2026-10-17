@@ -118,6 +118,6 @@ public class MetaAdsManager {
     }
 
     public static boolean isRewardedReady() {
-        return rewardedAd != null && rewardedAd.isAdLoaded();
+        return false; // Meta rewarded disabled — format mismatch
     }
 }

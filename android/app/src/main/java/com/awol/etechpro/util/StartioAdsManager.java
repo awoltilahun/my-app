@@ -3,12 +3,20 @@ package com.awol.etechpro.util;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 
-import com.startapp.sdk.ads.banner.Banner;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.startapp.sdk.ads.banner.BannerCreator;
+import com.startapp.sdk.ads.banner.BannerFormat;
+import com.startapp.sdk.ads.banner.BannerRequest;
+import com.startapp.sdk.adsbase.Ad;
 import com.startapp.sdk.adsbase.StartAppAd;
 import com.startapp.sdk.adsbase.StartAppSDK;
 import com.startapp.sdk.adsbase.VideoListener;
+import com.startapp.sdk.adsbase.adListeners.AdEventListener;
 
 /**
  * Start.io (formerly StartApp) SDK wrapper.
@@ -18,11 +26,16 @@ import com.startapp.sdk.adsbase.VideoListener;
  *
  * Initialization strategy:
  *  - StartAppInitProvider ContentProvider is removed via tools:node="remove"
- *    in AndroidManifest.xml so the SDK CANNOT auto-initialize before
+ *    in AndroidManifest.xml — SDK CANNOT auto-initialize before
  *    Application.onCreate() runs.
- *  - StartAppSDK.init() is called explicitly in EtechProApp.onCreate(),
- *    which is the first code that runs after all ContentProviders complete.
+ *  - StartAppSDK.init() is called explicitly in EtechProApp.onCreate().
  *  - The `initialized` flag prevents any ad call before init completes.
+ *
+ * Banner strategy:
+ *  - Uses BannerRequest API (recommended by Start.io SDK 5.x docs)
+ *    so we receive explicit load-success / load-failure callbacks.
+ *  - Container visibility is set to VISIBLE only after a successful load.
+ *  - Test ads are enabled only when BuildConfig.DEBUG is true.
  */
 public class StartioAdsManager {
 
@@ -32,21 +45,22 @@ public class StartioAdsManager {
 
     // ── Initialize ────────────────────────────────────────────────
 
-    /**
-     * Must be called in Application.onCreate() before any Activity starts.
-     * StartAppSDK.init() is synchronous — init is complete when this returns.
-     */
     public static void initialize(Context context) {
         if (initialized) {
             Log.d(TAG, "Already initialized — skipping duplicate call");
             return;
         }
-
         try {
-            // Pass APPLICATION context to avoid Activity leaks.
-            // Third param = false → disable test ads in production.
             StartAppSDK.init(context.getApplicationContext(), APP_ID, false);
-            StartAppSDK.setTestAdsEnabled(false);
+
+            // Enable test ads in debug builds only
+            if (com.awol.etechpro.BuildConfig.DEBUG) {
+                StartAppSDK.setTestAdsEnabled(true);
+                Log.d(TAG, "⚠️  Test ads ENABLED (debug build)");
+            } else {
+                StartAppSDK.setTestAdsEnabled(false);
+            }
+
             initialized = true;
             Log.d(TAG, "✅ Start.io initialized with App ID: " + APP_ID);
 
@@ -59,6 +73,42 @@ public class StartioAdsManager {
         return initialized;
     }
 
+    // ── Banner ────────────────────────────────────────────────────
+
+    /**
+     * Loads a banner using BannerRequest (SDK 5.x recommended API).
+     * Container is shown only after a successful load.
+     * Failures are logged with the exact error string from the SDK.
+     */
+    public static void loadBanner(Context context, ViewGroup container) {
+        if (!initialized) {
+            Log.e(TAG, "loadBanner called before init — skipping");
+            return;
+        }
+        Log.d(TAG, "Banner load requested…");
+        new BannerRequest(context.getApplicationContext())
+                .setAdFormat(BannerFormat.BANNER)
+                .load((creator, error) -> {
+                    if (creator != null) {
+                        View adView = creator.create(context.getApplicationContext(), null);
+                        // Must add and show on the main thread
+                        if (container instanceof android.view.ViewGroup) {
+                            ((android.app.Activity) context).runOnUiThread(() -> {
+                                container.removeAllViews();
+                                container.addView(adView);
+                                container.setVisibility(View.VISIBLE);
+                                Log.d(TAG, "✅ Banner loaded and visible");
+                            });
+                        }
+                    } else {
+                        Log.e(TAG, "❌ Banner failed to load — error: "
+                                + (error != null ? error : "unknown"));
+                        ((android.app.Activity) context).runOnUiThread(() ->
+                                container.setVisibility(View.GONE));
+                    }
+                });
+    }
+
     // ── Interstitial ──────────────────────────────────────────────
 
     public static void showInterstitial(Activity activity, Runnable onComplete) {
@@ -67,13 +117,20 @@ public class StartioAdsManager {
             if (onComplete != null) onComplete.run();
             return;
         }
-        try {
-            StartAppAd.showAd(activity);
-            Log.d(TAG, "Interstitial shown");
-        } catch (Exception e) {
-            Log.e(TAG, "Interstitial error: " + e.getMessage());
-        }
-        if (onComplete != null) onComplete.run();
+        StartAppAd interstitialAd = new StartAppAd(activity);
+        interstitialAd.loadAd(new AdEventListener() {
+            @Override
+            public void onReceiveAd(@NonNull Ad ad) {
+                Log.d(TAG, "Interstitial loaded — showing");
+                interstitialAd.showAd();
+                if (onComplete != null) onComplete.run();
+            }
+            @Override
+            public void onFailedToReceiveAd(@Nullable Ad ad) {
+                Log.e(TAG, "Interstitial failed to load");
+                if (onComplete != null) onComplete.run();
+            }
+        });
     }
 
     // ── Rewarded ──────────────────────────────────────────────────
@@ -85,43 +142,26 @@ public class StartioAdsManager {
             if (onComplete != null) onComplete.run();
             return;
         }
-        try {
-            StartAppAd startAppAd = new StartAppAd(activity);
-            startAppAd.setVideoListener(new VideoListener() {
-                @Override
-                public void onVideoCompleted() {
-                    Log.d(TAG, "Rewarded video completed — granting reward");
-                    if (onRewarded != null) onRewarded.run();
-                }
-            });
-            startAppAd.loadAd(StartAppAd.AdMode.REWARDED_VIDEO);
-            startAppAd.showAd();
-        } catch (Exception e) {
-            Log.e(TAG, "Rewarded error: " + e.getMessage());
-        }
-        if (onComplete != null) onComplete.run();
-    }
-
-    // ── Banner ────────────────────────────────────────────────────
-
-    /**
-     * Creates a banner programmatically AFTER SDK init.
-     * Never call this before initialize() completes.
-     */
-    public static Banner createBanner(Activity activity, ViewGroup container) {
-        if (!initialized) {
-            Log.e(TAG, "createBanner called before init — skipping");
-            return null;
-        }
-        try {
-            Banner banner = new Banner(activity);
-            container.addView(banner);
-            container.setVisibility(android.view.View.VISIBLE);
-            Log.d(TAG, "Banner created for App ID: " + APP_ID);
-            return banner;
-        } catch (Exception e) {
-            Log.e(TAG, "Banner creation error: " + e.getMessage());
-            return null;
-        }
+        StartAppAd rewardedAd = new StartAppAd(activity);
+        rewardedAd.setVideoListener(new VideoListener() {
+            @Override
+            public void onVideoCompleted() {
+                Log.d(TAG, "Rewarded video completed — granting reward");
+                if (onRewarded != null) onRewarded.run();
+            }
+        });
+        rewardedAd.loadAd(StartAppAd.AdMode.REWARDED_VIDEO, new AdEventListener() {
+            @Override
+            public void onReceiveAd(@NonNull Ad ad) {
+                Log.d(TAG, "Rewarded loaded — showing");
+                rewardedAd.showAd();
+                if (onComplete != null) onComplete.run();
+            }
+            @Override
+            public void onFailedToReceiveAd(@Nullable Ad ad) {
+                Log.e(TAG, "Rewarded failed to load");
+                if (onComplete != null) onComplete.run();
+            }
+        });
     }
 }

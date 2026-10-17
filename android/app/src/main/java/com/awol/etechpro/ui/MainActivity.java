@@ -125,9 +125,9 @@ public class MainActivity extends AppCompatActivity {
             if (metaBannerContainer != null) {
                 MetaAdsManager.loadBanner(this, metaBannerContainer);
             }
-            // Create Start.io banner programmatically AFTER SDK init
+            // Create Start.io banner using BannerRequest API (has load callbacks)
             if (startioBannerContainer != null) {
-                StartioAdsManager.createBanner(this, startioBannerContainer);
+                StartioAdsManager.loadBanner(this, startioBannerContainer);
             }
             // Also try Unity — if it loads it will hide Start.io
             if (unityBannerContainer != null) {

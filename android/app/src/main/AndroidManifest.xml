@@ -43,6 +43,13 @@
             android:name="com.startapp.sdk.RETURN_ADS_ENABLED"
             android:value="false" />
 
+        <!-- Disable Start.io built-in consent dialog
+             We handle user privacy disclosure via our own privacy policy
+             and Google Play Data Safety declaration -->
+        <meta-data
+            android:name="com.startapp.sdk.GDPR_CONSENT_SHOWN"
+            android:value="true" />
+
         <!-- Remove Start.io ContentProvider to prevent auto-init before our code runs -->
         <provider
             android:name="com.startapp.sdk.adsbase.StartAppInitProvider"

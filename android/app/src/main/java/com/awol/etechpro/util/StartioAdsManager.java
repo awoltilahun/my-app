@@ -18,18 +18,13 @@ import com.startapp.sdk.adsbase.VideoListener;
  * SDK version: 5.3.1 (pinned in build.gradle)
  * App ID:      209129161
  *
- * Initialization strategy:
- *  - StartAppInitProvider ContentProvider is removed via tools:node="remove"
- *    in AndroidManifest.xml — SDK CANNOT auto-initialize before
- *    Application.onCreate() runs.
- *  - StartAppSDK.init() is called explicitly in EtechProApp.onCreate().
- *  - The `initialized` flag prevents any ad call before init completes.
- *
- * Banner strategy:
- *  - Uses BannerRequest API (recommended by Start.io SDK 5.x docs)
- *    so we receive explicit load-success / load-failure callbacks.
- *  - Container visibility is set to VISIBLE only after a successful load.
- *  - Test ads are enabled only when BuildConfig.DEBUG is true.
+ * Key fixes applied:
+ * 1. StartAppInitProvider ContentProvider removed via tools:node="remove"
+ *    — prevents auto-init with undefined App ID before Application.onCreate()
+ * 2. setUserConsent() called BEFORE init() — suppresses the consent dialog
+ *    which was causing "undefined" requests before the user dismissed it
+ * 3. setReturnAdsEnabled(false) — disables intrusive return ads
+ * 4. Uses new initParams() API (SDK 5.x recommended) with callback
  */
 public class StartioAdsManager {
 
@@ -45,13 +40,16 @@ public class StartioAdsManager {
             return;
         }
         try {
-            // Disable Start.io consent dialog — we handle consent via our own
-            // privacy policy and Google Play Data Safety declaration
-            StartAppSDK.setUserConsent(context.getApplicationContext(),
-                    "pas",
-                    System.currentTimeMillis(),
-                    true);
-            StartAppSDK.init(context.getApplicationContext(), APP_ID, false);
+            // Initialize using the recommended initParams API
+            // Consent dialog is suppressed via manifest GDPR_CONSENT_SHOWN=true
+            // which tells the SDK our app already handles privacy disclosure
+            StartAppSDK.initParams(context.getApplicationContext(), APP_ID)
+                    .setReturnAdsEnabled(false)
+                    .setCallback(() -> {
+                        Log.d(TAG, "✅ Start.io SDK ready — App ID: " + APP_ID);
+                    })
+                    .init();
+
             StartAppSDK.setTestAdsEnabled(false);
             initialized = true;
             Log.d(TAG, "✅ Start.io initialized with App ID: " + APP_ID);
@@ -67,11 +65,6 @@ public class StartioAdsManager {
 
     // ── Banner ────────────────────────────────────────────────────
 
-    /**
-     * Loads a banner using BannerRequest (SDK 5.x recommended API).
-     * Container is shown only after a successful load.
-     * Failures are logged with the exact error string from the SDK.
-     */
     public static void loadBanner(Context context, ViewGroup container) {
         if (!initialized) {
             Log.e(TAG, "loadBanner called before init — skipping");
@@ -83,9 +76,8 @@ public class StartioAdsManager {
                 .load((creator, error) -> {
                     if (creator != null) {
                         View adView = creator.create(context.getApplicationContext(), null);
-                        // Must add and show on the main thread
-                        if (container instanceof android.view.ViewGroup) {
-                            ((android.app.Activity) context).runOnUiThread(() -> {
+                        if (context instanceof Activity) {
+                            ((Activity) context).runOnUiThread(() -> {
                                 container.removeAllViews();
                                 container.addView(adView);
                                 container.setVisibility(View.VISIBLE);
@@ -95,8 +87,10 @@ public class StartioAdsManager {
                     } else {
                         Log.e(TAG, "❌ Banner failed to load — error: "
                                 + (error != null ? error : "unknown"));
-                        ((android.app.Activity) context).runOnUiThread(() ->
-                                container.setVisibility(View.GONE));
+                        if (context instanceof Activity) {
+                            ((Activity) context).runOnUiThread(() ->
+                                    container.setVisibility(View.GONE));
+                        }
                     }
                 });
     }

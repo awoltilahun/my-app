@@ -45,6 +45,12 @@ public class StartioAdsManager {
             return;
         }
         try {
+            // Disable Start.io consent dialog — we handle consent via our own
+            // privacy policy and Google Play Data Safety declaration
+            StartAppSDK.setUserConsent(context.getApplicationContext(),
+                    "pas",
+                    System.currentTimeMillis(),
+                    true);
             StartAppSDK.init(context.getApplicationContext(), APP_ID, false);
             StartAppSDK.setTestAdsEnabled(false);
             initialized = true;

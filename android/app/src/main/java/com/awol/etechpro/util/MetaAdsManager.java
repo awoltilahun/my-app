@@ -26,6 +26,7 @@ public class MetaAdsManager {
     public static final String PLACEMENT_REWARDED     = "1780406383290238_1780412633289613";
 
     private static InterstitialAd interstitialAd;
+    private static boolean bannerLoaded = false; // prevent reload too frequently
 
     // ── Initialize ────────────────────────────────────────────────
 
@@ -41,6 +42,10 @@ public class MetaAdsManager {
     // ── Banner ────────────────────────────────────────────────────
 
     public static void loadBanner(Activity activity, ViewGroup container) {
+        if (bannerLoaded) {
+            Log.d(TAG, "Meta banner already loaded — skipping");
+            return;
+        }
         AdView adView = new AdView(activity, PLACEMENT_BANNER, AdSize.BANNER_HEIGHT_50);
         container.addView(adView);
         adView.loadAd(adView.buildLoadAdConfig()
@@ -48,6 +53,7 @@ public class MetaAdsManager {
                     @Override
                     public void onAdLoaded(Ad ad) {
                         Log.d(TAG, "Meta banner loaded");
+                        bannerLoaded = true;
                         container.setVisibility(android.view.View.VISIBLE);
                     }
                     @Override

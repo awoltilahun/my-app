@@ -38,7 +38,7 @@ public class SettingsActivity extends AppCompatActivity {
     private static final String KEY_DARK   = "dark_mode";
     private static final String KEY_NOTIF  = "notifications_enabled";
     private static final String KEY_AD_FREE_UNTIL = "ad_free_until";
-    private static final int CURRENT_VERSION = 24;
+    private static final int CURRENT_VERSION = 25;
 
     private RewardedAd rewardedAd;
     private TextView tvAdStatus;

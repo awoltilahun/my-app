@@ -31,6 +31,8 @@ public class StartioAdsManager {
     private static final String TAG = "StartioAdsManager";
     public  static final String APP_ID = "209129161";
     private static boolean initialized = false;
+    private static ViewGroup pendingBannerContainer = null;
+    private static Context pendingBannerContext = null;
 
     // ── Initialize ────────────────────────────────────────────────
 
@@ -40,19 +42,38 @@ public class StartioAdsManager {
             return;
         }
         try {
-            // Initialize using the recommended initParams API
-            // Consent dialog is suppressed via manifest GDPR_CONSENT_SHOWN=true
-            // which tells the SDK our app already handles privacy disclosure
+            // Set user consent BEFORE init — prevents consent dialog from appearing
+            // and stops undefined Product ID requests during consent-pending window.
+            // Your users are primarily in Ethiopia (non-GDPR territory).
+            // GDPR_CONSENT_SHOWN manifest key alone is unreliable in SDK 5.3.1.
+            StartAppSDK.setUserConsent(
+                    context.getApplicationContext(),
+                    "pas",
+                    System.currentTimeMillis(),
+                    true);
+
             StartAppSDK.initParams(context.getApplicationContext(), APP_ID)
                     .setReturnAdsEnabled(false)
                     .setCallback(() -> {
-                        Log.d(TAG, "✅ Start.io SDK ready — App ID: " + APP_ID);
+                        StartAppSDK.setTestAdsEnabled(false);
+                        initialized = true;
+                        Log.d(TAG, "✅ Start.io SDK ready — App ID: " + APP_ID
+                                + " — ads enabled");
+                        // Load queued banner now that init is complete
+                        if (pendingBannerContainer != null && pendingBannerContext != null) {
+                            Context ctx = pendingBannerContext;
+                            ViewGroup container = pendingBannerContainer;
+                            pendingBannerContainer = null;
+                            pendingBannerContext = null;
+                            if (ctx instanceof Activity) {
+                                ((Activity) ctx).runOnUiThread(() ->
+                                        loadBanner(ctx, container));
+                            }
+                        }
                     })
                     .init();
 
-            StartAppSDK.setTestAdsEnabled(false);
-            initialized = true;
-            Log.d(TAG, "✅ Start.io initialized with App ID: " + APP_ID);
+            Log.d(TAG, "Start.io initParams called — waiting for callback…");
 
         } catch (Exception e) {
             Log.e(TAG, "❌ Start.io init failed: " + e.getMessage(), e);
@@ -67,7 +88,10 @@ public class StartioAdsManager {
 
     public static void loadBanner(Context context, ViewGroup container) {
         if (!initialized) {
-            Log.e(TAG, "loadBanner called before init — skipping");
+            // Queue banner — will be loaded when init callback fires
+            Log.d(TAG, "loadBanner queued — waiting for init to complete");
+            pendingBannerContainer = container;
+            pendingBannerContext = context;
             return;
         }
         Log.d(TAG, "Banner load requested…");

@@ -58,24 +58,27 @@ public class EtechProApp extends Application
                     }
                 });
 
-        // Initialize AdMob SDK here (Application level) so it's ready before any
-        // Activity tries to load ads. The App Open Ad is loaded inside the callback
-        // to guarantee MobileAds is fully initialized first.
-        MobileAds.initialize(this, initializationStatus -> {
-            Log.d(TAG, "AdMob initialized");
-            loadAppOpenAd();
-        });
+        // Initialize all ad SDKs on a background thread to prevent ANR
+        // MobileAds.initialize() and other SDK inits do heavy work and network
+        // calls that block the main thread causing "Input dispatching timed out"
+        new Thread(() -> {
+            // Initialize AdMob — callback posts to main thread internally
+            MobileAds.initialize(this, initializationStatus -> {
+                Log.d(TAG, "AdMob initialized");
+                loadAppOpenAd();
+            });
 
-        // Initialize Unity Ads
-        UnityAdsManager.initialize(this);
-        UnityAdsManager.loadInterstitial();
-        UnityAdsManager.loadRewarded();
+            // Initialize Unity Ads
+            UnityAdsManager.initialize(this);
+            UnityAdsManager.loadInterstitial();
+            UnityAdsManager.loadRewarded();
 
-        // Initialize Start.io
-        StartioAdsManager.initialize(this);
+            // Initialize Start.io
+            StartioAdsManager.initialize(this);
 
-        // Initialize Meta Audience Network
-        MetaAdsManager.initialize(this);
+            // Initialize Meta Audience Network
+            MetaAdsManager.initialize(this);
+        }).start();
 
         // Register lifecycle callbacks
         registerActivityLifecycleCallbacks(this);

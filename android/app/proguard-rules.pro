@@ -66,3 +66,27 @@
 -keep class com.facebook.** { *; }
 -keep class com.facebook.ads.** { *; }
 -dontwarn com.facebook.**
+
+# LevelPlay (ironSource) SDK
+-keepclassmembers class * implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator *;
+}
+-keep class com.google.android.gms.appset.** { *; }
+-keep class com.google.android.gms.tasks.** { *; }
+-keep class com.ironsource.adapters.** { *; }
+-dontwarn com.ironsource.**
+-dontwarn com.ironsource.adapters.**
+-keepclassmembers class com.ironsource.** { public *; }
+-keep public class com.ironsource.**
+-keep class com.ironsource.adapters.** { *; }
+-dontwarn com.iab.omid.**
+-keep class com.iab.omid.** { *; }
+-keepattributes JavascriptInterface
+-keepclassmembers class * { @android.webkit.JavascriptInterface <methods>; }
+-keepclassmembers class com.facebook.ads.internal.AdSdkVersion { static *; }
+-keepclassmembers class com.facebook.ads.internal.settings.AdSdkVersion { static *; }
+-keepclassmembers class com.facebook.ads.BuildConfig { static *; }
+-keep public interface com.facebook.ads** { *; }
+-dontwarn com.facebook.ads.internal.**
+-keeppackagenames com.facebook.*
+-keep public class com.facebook.ads.** { *; }

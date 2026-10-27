@@ -13,6 +13,8 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.awol.etechpro.ui.SettingsActivity;
+import com.awol.etechpro.util.InMobiAdsManager;
+import com.awol.etechpro.util.LevelPlayAdsManager;
 import com.awol.etechpro.util.MetaAdsManager;
 import com.awol.etechpro.util.StartioAdsManager;
 import com.awol.etechpro.util.UnityAdsManager;
@@ -48,6 +50,12 @@ public class EtechProApp extends Application
         }
 
         SettingsActivity.applyTheme(prefs);
+
+        // Initialize InMobi on main thread — required by InMobi SDK docs
+        InMobiAdsManager.initialize(this);
+
+        // Initialize LevelPlay on main thread — for Meta mediation
+        LevelPlayAdsManager.initialize(this);
 
         FirebaseMessaging.getInstance().subscribeToTopic("all")
                 .addOnCompleteListener(task -> {

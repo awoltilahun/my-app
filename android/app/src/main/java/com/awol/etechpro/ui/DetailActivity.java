@@ -27,6 +27,8 @@ import com.awol.etechpro.R;
 import com.awol.etechpro.adapter.TechTipAdapter;
 import com.awol.etechpro.api.RetrofitClient;
 import com.awol.etechpro.model.TechTip;
+import com.awol.etechpro.util.InMobiAdsManager;
+import com.awol.etechpro.util.LevelPlayAdsManager;
 import com.awol.etechpro.util.MetaAdsManager;
 import com.awol.etechpro.util.StartioAdsManager;
 import com.awol.etechpro.util.UnityAdsManager;
@@ -169,13 +171,16 @@ public class DetailActivity extends AppCompatActivity {
                         rvMoreTips.setAdapter(
                                 new TechTipAdapter(DetailActivity.this, moreTips));
 
-                        // Show interstitial — AdMob first, Meta second, Unity third, Start.io fourth
+                        // Show interstitial — AdMob first, LevelPlay(Meta) second, InMobi third, Unity fourth, Start.io fifth
                         if (interstitialAd != null && !adShown) {
                             adShown = true;
                             interstitialAd.show(DetailActivity.this);
-                        } else if (!adShown && MetaAdsManager.isInterstitialReady()) {
+                        } else if (!adShown && LevelPlayAdsManager.isInterstitialReady()) {
                             adShown = true;
-                            MetaAdsManager.showInterstitial(DetailActivity.this, null);
+                            LevelPlayAdsManager.showInterstitial(DetailActivity.this, null);
+                        } else if (!adShown && InMobiAdsManager.isInterstitialReady()) {
+                            adShown = true;
+                            InMobiAdsManager.showInterstitial(DetailActivity.this, null);
                         } else if (!adShown) {
                             adShown = true;
                             UnityAdsManager.showInterstitial(DetailActivity.this, null);
@@ -196,5 +201,17 @@ public class DetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LevelPlayAdsManager.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        LevelPlayAdsManager.onPause(this);
+        super.onPause();
     }
 }

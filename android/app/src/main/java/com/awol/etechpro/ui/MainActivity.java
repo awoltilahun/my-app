@@ -39,6 +39,8 @@ import com.awol.etechpro.R;
 import com.awol.etechpro.adapter.TechTipAdapter;
 import com.awol.etechpro.api.RetrofitClient;
 import com.awol.etechpro.model.TechTip;
+import com.awol.etechpro.util.InMobiAdsManager;
+import com.awol.etechpro.util.LevelPlayAdsManager;
 import com.awol.etechpro.util.MetaAdsManager;
 import com.awol.etechpro.util.StartioAdsManager;
 import com.awol.etechpro.util.UnityAdsManager;
@@ -132,6 +134,16 @@ public class MainActivity extends AppCompatActivity {
             // Also try Unity — if it loads it will hide Start.io
             if (unityBannerContainer != null) {
                 unityBannerView = UnityAdsManager.createBanner(this, unityBannerContainer);
+            }
+            // Load InMobi banner
+            FrameLayout inmobiBannerContainer = findViewById(R.id.inmobi_banner_container);
+            if (inmobiBannerContainer != null) {
+                InMobiAdsManager.loadBanner(this, inmobiBannerContainer);
+            }
+            // Load LevelPlay banner (Meta via mediation)
+            FrameLayout levelplayBannerContainer = findViewById(R.id.levelplay_banner_container);
+            if (levelplayBannerContainer != null) {
+                LevelPlayAdsManager.loadBanner(this, levelplayBannerContainer);
             }
         } else {
             // Ad free period — hide all banners
@@ -557,6 +569,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (adView != null) adView.resume();
+        LevelPlayAdsManager.onResume(this);
         // Only load data if list is empty
         if (techTipAdapter != null && techTipList.isEmpty()) {
             loadData();
@@ -567,6 +580,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         if (adView != null) adView.pause();
+        LevelPlayAdsManager.onPause(this);
         refreshHandler.removeCallbacks(refreshRunnable);
         super.onPause();
     }

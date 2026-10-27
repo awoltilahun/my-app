@@ -30,6 +30,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+
+    configurations.all {
+        resolutionStrategy {
+            // Force browser 1.8.0 — LevelPlay pulls 1.9.0 which requires AGP 8.9.1+
+            force 'androidx.browser:browser:1.8.0'
+        }
+    }
 }
 
 dependencies {
@@ -67,8 +74,23 @@ dependencies {
     // Start.io (formerly StartApp)
     implementation 'com.startapp:inapp-sdk:5.3.1'
 
-    // Meta Audience Network
-    implementation 'com.facebook.android:audience-network-sdk:6.17.0'
+    // Meta Audience Network — included via LevelPlay facebook-adapter:5.6.0 (no separate SDK needed)
+
+    // InMobi SDK
+    implementation 'com.inmobi.monetization:inmobi-ads-kotlin:11.5.1'
+    implementation "androidx.media3:media3-exoplayer:1.4.1"
+    implementation 'com.squareup.picasso:picasso:2.8'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.1.21"
+    implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
+    implementation 'androidx.browser:browser:1.8.0'
+
+    // LevelPlay (ironSource) SDK — for Meta mediation only
+    implementation 'com.unity3d.ads-mediation:mediation-sdk:9.5.0'
+    // Meta adapter — includes Meta Audience Network SDK (replaces direct com.facebook.android:audience-network-sdk)
+    implementation 'com.unity3d.ads-mediation:facebook-adapter:5.6.0'
+    // Force browser version compatible with AGP 8.7.0
+    implementation 'androidx.browser:browser:1.8.0'
 
     // Testing
     testImplementation 'junit:junit:4.13.2'

@@ -117,6 +117,12 @@ public class DetailActivity extends AppCompatActivity {
         // Load interstitial ad — shows when More Tips section appears
         loadInterstitialAd();
 
+        // Load MREC ad
+        android.widget.FrameLayout mrecContainer = findViewById(R.id.mrec_container);
+        if (mrecContainer != null) {
+            LevelPlayAdsManager.loadMrec(this, mrecContainer);
+        }
+
         // Load More Tips
         loadMoreTips(currentId);
     }
@@ -213,5 +219,11 @@ public class DetailActivity extends AppCompatActivity {
     protected void onPause() {
         LevelPlayAdsManager.onPause(this);
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        LevelPlayAdsManager.destroyMrec();
+        super.onDestroy();
     }
 }

@@ -37,12 +37,16 @@ public class LevelPlayAdsManager {
     private static final String APP_KEY              = "2908fcb55";
     private static final String AD_UNIT_BANNER       = "2d6b8u0ergr39j02";
     private static final String AD_UNIT_INTERSTITIAL = "hn3cmowitwovmx7h";
+    private static final String AD_UNIT_MREC         = "yrgolh6nr113erss";
 
     private static boolean initialized = false;
     private static LevelPlayInterstitialAd interstitialAd;
     private static LevelPlayBannerAdView bannerAdView;
+    private static LevelPlayBannerAdView mrecAdView;
     private static Activity pendingBannerActivity = null;
     private static ViewGroup pendingBannerContainer = null;
+    private static Activity pendingMrecActivity = null;
+    private static ViewGroup pendingMrecContainer = null;
 
     // ── Initialize — call on main thread ─────────────────────────
 
@@ -70,6 +74,14 @@ public class LevelPlayAdsManager {
                     pendingBannerActivity = null;
                     pendingBannerContainer = null;
                     act.runOnUiThread(() -> loadBanner(act, cont));
+                }
+                // Load queued MREC if any
+                if (pendingMrecActivity != null && pendingMrecContainer != null) {
+                    Activity act = pendingMrecActivity;
+                    ViewGroup cont = pendingMrecContainer;
+                    pendingMrecActivity = null;
+                    pendingMrecContainer = null;
+                    act.runOnUiThread(() -> loadMrec(act, cont));
                 }
             }
         });
@@ -197,6 +209,71 @@ public class LevelPlayAdsManager {
         if (bannerAdView != null) {
             bannerAdView.destroy();
             bannerAdView = null;
+        }
+    }
+
+    // ── MREC (300x250) ────────────────────────────────────────────
+
+    public static void loadMrec(Activity activity, ViewGroup container) {
+        if (!initialized) {
+            Log.d(TAG, "loadMrec queued — waiting for init");
+            pendingMrecActivity = activity;
+            pendingMrecContainer = container;
+            return;
+        }
+        Log.d(TAG, "MREC load requested — ad unit: " + AD_UNIT_MREC);
+
+        LevelPlayBannerAdView.Config mrecConfig = new LevelPlayBannerAdView.Config.Builder()
+                .setAdSize(LevelPlayAdSize.MEDIUM_RECTANGLE)
+                .build();
+
+        mrecAdView = new LevelPlayBannerAdView(activity, AD_UNIT_MREC, mrecConfig);
+
+        mrecAdView.setBannerListener(new LevelPlayBannerAdViewListener() {
+            @Override
+            public void onAdLoaded(@NonNull LevelPlayAdInfo adInfo) {
+                Log.d(TAG, "✅ MREC loaded — network: " + adInfo.getAdNetwork());
+                activity.runOnUiThread(() -> {
+                    container.removeAllViews();
+                    container.addView(mrecAdView);
+                    container.setVisibility(View.VISIBLE);
+                });
+            }
+
+            @Override
+            public void onAdLoadFailed(@NonNull LevelPlayAdError error) {
+                Log.e(TAG, "❌ MREC load failed: " + error.getErrorMessage());
+                activity.runOnUiThread(() ->
+                        container.setVisibility(View.GONE));
+            }
+
+            @Override
+            public void onAdDisplayed(@NonNull LevelPlayAdInfo adInfo) {
+                Log.d(TAG, "MREC displayed");
+            }
+
+            @Override
+            public void onAdClicked(@NonNull LevelPlayAdInfo adInfo) {
+                Log.d(TAG, "MREC clicked");
+            }
+
+            @Override
+            public void onAdLeftApplication(@NonNull LevelPlayAdInfo adInfo) {}
+
+            @Override
+            public void onAdExpanded(@NonNull LevelPlayAdInfo adInfo) {}
+
+            @Override
+            public void onAdCollapsed(@NonNull LevelPlayAdInfo adInfo) {}
+        });
+
+        mrecAdView.loadAd();
+    }
+
+    public static void destroyMrec() {
+        if (mrecAdView != null) {
+            mrecAdView.destroy();
+            mrecAdView = null;
         }
     }
 

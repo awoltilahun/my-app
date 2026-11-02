@@ -122,11 +122,7 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout startioBannerContainer = findViewById(R.id.startio_banner_container);
 
         if (System.currentTimeMillis() >= adFreeUntil) {
-            // Load Meta banner (highest CPM)
-            FrameLayout metaBannerContainer = findViewById(R.id.meta_banner_container);
-            if (metaBannerContainer != null) {
-                MetaAdsManager.loadBanner(this, metaBannerContainer);
-            }
+            // Meta banner removed — now handled via LevelPlay mediation
             // Create Start.io banner using BannerRequest API (has load callbacks)
             if (startioBannerContainer != null) {
                 StartioAdsManager.loadBanner(this, startioBannerContainer);

@@ -84,8 +84,7 @@ public class EtechProApp extends Application
             // Initialize Start.io
             StartioAdsManager.initialize(this);
 
-            // Initialize Meta Audience Network
-            MetaAdsManager.initialize(this);
+            // Meta Audience Network is now handled via LevelPlay mediation — direct init removed
         }).start();
 
         // Register lifecycle callbacks

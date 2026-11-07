@@ -114,7 +114,12 @@ public class DetailActivity extends AppCompatActivity {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(websiteUrl))));
         }
 
-        // Load interstitial ad — shows when More Tips section appears
+        // Show interstitial at the natural transition point BEFORE content loads
+        // This is the correct AdMob placement — at logical break between pages
+        // NOT after content has already loaded (which violates policy)
+        showInterstitialAtTransition();
+
+        // Load interstitial ad for next visit
         loadInterstitialAd();
 
         // Load MREC ad
@@ -125,6 +130,24 @@ public class DetailActivity extends AppCompatActivity {
 
         // Load More Tips
         loadMoreTips(currentId);
+    }
+
+    private void showInterstitialAtTransition() {
+        // Show at the logical transition point — user tapped tip, content not yet loaded
+        // This is compliant: ad shows BETWEEN pages, not after page has loaded
+        if (interstitialAd != null) {
+            adShown = true;
+            interstitialAd.show(this);
+        } else if (LevelPlayAdsManager.isInterstitialReady()) {
+            adShown = true;
+            LevelPlayAdsManager.showInterstitial(this, null);
+        } else if (InMobiAdsManager.isInterstitialReady()) {
+            adShown = true;
+            InMobiAdsManager.showInterstitial(this, null);
+        } else {
+            adShown = true;
+            UnityAdsManager.showInterstitial(this, null);
+        }
     }
 
     private void loadInterstitialAd() {
@@ -176,22 +199,8 @@ public class DetailActivity extends AppCompatActivity {
                                 new LinearLayoutManager(DetailActivity.this));
                         rvMoreTips.setAdapter(
                                 new TechTipAdapter(DetailActivity.this, moreTips));
-
-                        // Show interstitial — AdMob first, LevelPlay(Meta) second, InMobi third, Unity fourth, Start.io fifth
-                        if (interstitialAd != null && !adShown) {
-                            adShown = true;
-                            interstitialAd.show(DetailActivity.this);
-                        } else if (!adShown && LevelPlayAdsManager.isInterstitialReady()) {
-                            adShown = true;
-                            LevelPlayAdsManager.showInterstitial(DetailActivity.this, null);
-                        } else if (!adShown && InMobiAdsManager.isInterstitialReady()) {
-                            adShown = true;
-                            InMobiAdsManager.showInterstitial(DetailActivity.this, null);
-                        } else if (!adShown) {
-                            adShown = true;
-                            UnityAdsManager.showInterstitial(DetailActivity.this, null);
-                            StartioAdsManager.showInterstitial(DetailActivity.this, null);
-                        }
+                        // Interstitial is now shown at transition point in onCreate
+                        // not here after content loads — AdMob policy compliance
                     }
                 }
             }

@@ -36,6 +36,7 @@ public class EtechProApp extends Application
     private AppOpenAd appOpenAd = null;
     private boolean isLoadingAd = false;
     private boolean isShowingAd = false;
+    private boolean appOpenAdShownThisSession = false;
     private long loadTime = 0;
     private Activity currentActivity;
 
@@ -153,8 +154,10 @@ public class EtechProApp extends Application
 
     @Override
     public void onStart(@NonNull LifecycleOwner owner) {
-        // App comes to foreground — show app open ad
-        if (currentActivity != null) {
+        // App Open Ad — show only once per cold launch, not on every foreground
+        // Showing on every foreground violates AdMob policy (back-to-back ads)
+        if (currentActivity != null && !appOpenAdShownThisSession) {
+            appOpenAdShownThisSession = true;
             showAdIfAvailable(currentActivity);
         }
     }

@@ -223,19 +223,22 @@ public class LevelPlayAdsManager {
         }
         Log.d(TAG, "MREC load requested — ad unit: " + AD_UNIT_MREC);
 
+        // Create a NEW instance per container — do NOT reuse static mrecAdView
+        // Reusing a single instance across multiple containers causes
+        // "child already has a parent" IllegalStateException
         LevelPlayBannerAdView.Config mrecConfig = new LevelPlayBannerAdView.Config.Builder()
                 .setAdSize(LevelPlayAdSize.MEDIUM_RECTANGLE)
                 .build();
 
-        mrecAdView = new LevelPlayBannerAdView(activity, AD_UNIT_MREC, mrecConfig);
+        LevelPlayBannerAdView newMrecView = new LevelPlayBannerAdView(activity, AD_UNIT_MREC, mrecConfig);
 
-        mrecAdView.setBannerListener(new LevelPlayBannerAdViewListener() {
+        newMrecView.setBannerListener(new LevelPlayBannerAdViewListener() {
             @Override
             public void onAdLoaded(@NonNull LevelPlayAdInfo adInfo) {
                 Log.d(TAG, "✅ MREC loaded — network: " + adInfo.getAdNetwork());
                 activity.runOnUiThread(() -> {
                     container.removeAllViews();
-                    container.addView(mrecAdView);
+                    container.addView(newMrecView);
                     container.setVisibility(View.VISIBLE);
                 });
             }
@@ -267,7 +270,7 @@ public class LevelPlayAdsManager {
             public void onAdCollapsed(@NonNull LevelPlayAdInfo adInfo) {}
         });
 
-        mrecAdView.loadAd();
+        newMrecView.loadAd();
     }
 
     public static void destroyMrec() {

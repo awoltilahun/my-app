@@ -287,6 +287,8 @@ public class MainActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         techTipAdapter = new TechTipAdapter(this, techTipList);
         rvTechTips.setLayoutManager(new LinearLayoutManager(this));
+        // Prevent ad view holders from being recycled — stops repeated MREC loads on scroll
+        rvTechTips.getRecycledViewPool().setMaxRecycledViews(2, 0);
         rvTechTips.setAdapter(techTipAdapter);
     }
 

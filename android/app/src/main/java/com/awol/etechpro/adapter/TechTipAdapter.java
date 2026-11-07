@@ -37,8 +37,11 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private Context context;
     private List<TechTip> techTipList;
-    // Track which adapter positions have already requested an MREC — prevents reload on scroll
+    // Track which adapter positions have already requested an MREC
     private final Set<Integer> requestedAdPositions = new HashSet<>();
+    // Store the loaded LevelPlayBannerAdView per adapter position for reattachment on scroll
+    private final java.util.Map<Integer, android.view.View> loadedAdViews =
+            new java.util.HashMap<>();
 
     public TechTipAdapter(Context context, List<TechTip> techTipList) {
         this.context = context;
@@ -112,17 +115,32 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof AdViewHolder) {
             AdViewHolder adHolder = (AdViewHolder) holder;
-            if (!requestedAdPositions.contains(position)) {
-                // First time this position is visible — hide and load
+
+            if (loadedAdViews.containsKey(position)) {
+                // Ad already loaded — reattach to this container on scroll
+                android.view.View storedAdView = loadedAdViews.get(position);
+                adHolder.mrecContainer.removeAllViews();
+                if (storedAdView.getParent() != null) {
+                    ((ViewGroup) storedAdView.getParent()).removeView(storedAdView);
+                }
+                adHolder.mrecContainer.addView(storedAdView);
+                adHolder.mrecContainer.setVisibility(View.VISIBLE);
+                adHolder.itemView.setVisibility(View.VISIBLE);
+            } else if (!requestedAdPositions.contains(position)) {
+                // First time — request the ad
                 requestedAdPositions.add(position);
                 adHolder.itemView.setVisibility(View.GONE);
                 adHolder.mrecContainer.setVisibility(View.GONE);
                 if (context instanceof Activity) {
+                    final int pos = position;
                     LevelPlayAdsManager.loadMrec((Activity) context,
-                            adHolder.mrecContainer, adHolder.itemView);
+                            adHolder.mrecContainer, adHolder.itemView,
+                            (adView) -> loadedAdViews.put(pos, adView));
                 }
+            } else {
+                // Requested but not yet loaded — keep hidden
+                adHolder.itemView.setVisibility(View.GONE);
             }
-            // If already requested — leave visibility as-is (ad may be showing)
             return;
         }
 
@@ -228,8 +246,8 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public void updateList(List<TechTip> newList) {
         this.techTipList = newList;
-        // Always clear so ad slots reload with fresh views after notifyDataSetChanged
         requestedAdPositions.clear();
+        loadedAdViews.clear();
         notifyDataSetChanged();
     }
 

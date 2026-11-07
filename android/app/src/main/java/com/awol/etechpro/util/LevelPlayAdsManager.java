@@ -45,8 +45,10 @@ public class LevelPlayAdsManager {
     private static LevelPlayBannerAdView mrecAdView;
     private static Activity pendingBannerActivity = null;
     private static ViewGroup pendingBannerContainer = null;
-    private static Activity pendingMrecActivity = null;
-    private static ViewGroup pendingMrecContainer = null;
+
+    // Queue for multiple MREC requests before init completes
+    private static final java.util.List<Object[]> pendingMrecRequests =
+            new java.util.ArrayList<>();
 
     // ── Initialize — call on main thread ─────────────────────────
 
@@ -75,13 +77,19 @@ public class LevelPlayAdsManager {
                     pendingBannerContainer = null;
                     act.runOnUiThread(() -> loadBanner(act, cont));
                 }
-                // Load queued MREC if any
-                if (pendingMrecActivity != null && pendingMrecContainer != null) {
-                    Activity act = pendingMrecActivity;
-                    ViewGroup cont = pendingMrecContainer;
-                    pendingMrecActivity = null;
-                    pendingMrecContainer = null;
-                    act.runOnUiThread(() -> loadMrec(act, cont, null));
+                // Load ALL queued MREC requests
+                if (!pendingMrecRequests.isEmpty()) {
+                    java.util.List<Object[]> pending =
+                            new java.util.ArrayList<>(pendingMrecRequests);
+                    pendingMrecRequests.clear();
+                    for (Object[] req : pending) {
+                        Activity act = (Activity) req[0];
+                        ViewGroup cont = (ViewGroup) req[1];
+                        View item = (View) req[2];
+                        OnMrecLoadedCallback cb = req.length > 3 ?
+                                (OnMrecLoadedCallback) req[3] : null;
+                        act.runOnUiThread(() -> loadMrec(act, cont, item, cb));
+                    }
                 }
             }
         });
@@ -214,11 +222,15 @@ public class LevelPlayAdsManager {
 
     // ── MREC (300x250) ────────────────────────────────────────────
 
-    public static void loadMrec(Activity activity, ViewGroup container, View itemView) {
+    public interface OnMrecLoadedCallback {
+        void onLoaded(android.view.View adView);
+    }
+
+    public static void loadMrec(Activity activity, ViewGroup container,
+            View itemView, OnMrecLoadedCallback callback) {
         if (!initialized) {
             Log.d(TAG, "loadMrec queued — waiting for init");
-            pendingMrecActivity = activity;
-            pendingMrecContainer = container;
+            pendingMrecRequests.add(new Object[]{activity, container, itemView, callback});
             return;
         }
         Log.d(TAG, "MREC load requested — ad unit: " + AD_UNIT_MREC);
@@ -239,6 +251,8 @@ public class LevelPlayAdsManager {
                     container.setVisibility(View.VISIBLE);
                     // Show whole row only when ad loads — no empty space on no fill
                     if (itemView != null) itemView.setVisibility(View.VISIBLE);
+                    // Notify adapter to store this view for scroll reattachment
+                    if (callback != null) callback.onLoaded(newMrecView);
                 });
             }
 

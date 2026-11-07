@@ -115,9 +115,11 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             // Only load once per position — prevents reload every time user scrolls
             if (!requestedAdPositions.contains(position)) {
                 requestedAdPositions.add(position);
+                adHolder.itemView.setVisibility(View.GONE);
                 adHolder.mrecContainer.setVisibility(View.GONE);
                 if (context instanceof Activity) {
-                    LevelPlayAdsManager.loadMrec((Activity) context, adHolder.mrecContainer);
+                    LevelPlayAdsManager.loadMrec((Activity) context,
+                            adHolder.mrecContainer, adHolder.itemView);
                 }
             }
             return;
@@ -224,8 +226,13 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public void updateList(List<TechTip> newList) {
+        boolean dataChanged = (this.techTipList == null) ||
+                (newList.size() != this.techTipList.size());
         this.techTipList = newList;
-        requestedAdPositions.clear(); // reset so ads reload with fresh data
+        // Only reset ad positions if tip count changed — prevents re-requesting on scroll/resume
+        if (dataChanged) {
+            requestedAdPositions.clear();
+        }
         notifyDataSetChanged();
     }
 

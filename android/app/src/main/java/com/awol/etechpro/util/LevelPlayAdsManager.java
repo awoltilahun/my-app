@@ -81,7 +81,7 @@ public class LevelPlayAdsManager {
                     ViewGroup cont = pendingMrecContainer;
                     pendingMrecActivity = null;
                     pendingMrecContainer = null;
-                    act.runOnUiThread(() -> loadMrec(act, cont));
+                    act.runOnUiThread(() -> loadMrec(act, cont, null));
                 }
             }
         });
@@ -214,7 +214,7 @@ public class LevelPlayAdsManager {
 
     // ── MREC (300x250) ────────────────────────────────────────────
 
-    public static void loadMrec(Activity activity, ViewGroup container) {
+    public static void loadMrec(Activity activity, ViewGroup container, View itemView) {
         if (!initialized) {
             Log.d(TAG, "loadMrec queued — waiting for init");
             pendingMrecActivity = activity;
@@ -223,9 +223,6 @@ public class LevelPlayAdsManager {
         }
         Log.d(TAG, "MREC load requested — ad unit: " + AD_UNIT_MREC);
 
-        // Create a NEW instance per container — do NOT reuse static mrecAdView
-        // Reusing a single instance across multiple containers causes
-        // "child already has a parent" IllegalStateException
         LevelPlayBannerAdView.Config mrecConfig = new LevelPlayBannerAdView.Config.Builder()
                 .setAdSize(LevelPlayAdSize.MEDIUM_RECTANGLE)
                 .build();
@@ -240,14 +237,19 @@ public class LevelPlayAdsManager {
                     container.removeAllViews();
                     container.addView(newMrecView);
                     container.setVisibility(View.VISIBLE);
+                    // Show whole row only when ad loads — no empty space on no fill
+                    if (itemView != null) itemView.setVisibility(View.VISIBLE);
                 });
             }
 
             @Override
             public void onAdLoadFailed(@NonNull LevelPlayAdError error) {
                 Log.e(TAG, "❌ MREC load failed: " + error.getErrorMessage());
-                activity.runOnUiThread(() ->
-                        container.setVisibility(View.GONE));
+                // Keep entire row hidden — no empty space
+                activity.runOnUiThread(() -> {
+                    container.setVisibility(View.GONE);
+                    if (itemView != null) itemView.setVisibility(View.GONE);
+                });
             }
 
             @Override

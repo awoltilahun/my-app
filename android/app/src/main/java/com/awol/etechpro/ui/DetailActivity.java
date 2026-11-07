@@ -125,7 +125,7 @@ public class DetailActivity extends AppCompatActivity {
         // Load MREC ad
         android.widget.FrameLayout mrecContainer = findViewById(R.id.mrec_container);
         if (mrecContainer != null) {
-            LevelPlayAdsManager.loadMrec(this, mrecContainer);
+            LevelPlayAdsManager.loadMrec(this, mrecContainer, null);
         }
 
         // Load More Tips

@@ -112,8 +112,8 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof AdViewHolder) {
             AdViewHolder adHolder = (AdViewHolder) holder;
-            // Only load once per position — prevents reload every time user scrolls
             if (!requestedAdPositions.contains(position)) {
+                // First time this position is visible — hide and load
                 requestedAdPositions.add(position);
                 adHolder.itemView.setVisibility(View.GONE);
                 adHolder.mrecContainer.setVisibility(View.GONE);
@@ -122,6 +122,7 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             adHolder.mrecContainer, adHolder.itemView);
                 }
             }
+            // If already requested — leave visibility as-is (ad may be showing)
             return;
         }
 
@@ -226,13 +227,9 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public void updateList(List<TechTip> newList) {
-        boolean dataChanged = (this.techTipList == null) ||
-                (newList.size() != this.techTipList.size());
         this.techTipList = newList;
-        // Only reset ad positions if tip count changed — prevents re-requesting on scroll/resume
-        if (dataChanged) {
-            requestedAdPositions.clear();
-        }
+        // Always clear so ad slots reload with fresh views after notifyDataSetChanged
+        requestedAdPositions.clear();
         notifyDataSetChanged();
     }
 

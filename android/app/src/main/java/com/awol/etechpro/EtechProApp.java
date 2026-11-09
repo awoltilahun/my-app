@@ -16,7 +16,6 @@ import com.awol.etechpro.ui.SettingsActivity;
 import com.awol.etechpro.util.InMobiAdsManager;
 import com.awol.etechpro.util.LevelPlayAdsManager;
 import com.awol.etechpro.util.MetaAdsManager;
-import com.awol.etechpro.util.StartioAdsManager;
 import com.awol.etechpro.util.UnityAdsManager;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.LoadAdError;
@@ -82,8 +81,7 @@ public class EtechProApp extends Application
             UnityAdsManager.loadInterstitial();
             UnityAdsManager.loadRewarded();
 
-            // Initialize Start.io
-            StartioAdsManager.initialize(this);
+            // Start.io removed — never filled, no support response
 
             // Meta Audience Network is now handled via LevelPlay mediation — direct init removed
         }).start();

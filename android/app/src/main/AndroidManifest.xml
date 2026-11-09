@@ -28,33 +28,7 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-9678232109126473~7295854829" />
 
-        <!-- Start.io App ID -->
-        <meta-data
-            android:name="com.startapp.sdk.APPLICATION_ID"
-            android:value="209129161" />
-
-        <!-- Disable Start.io splash ad — we have our own splash screen -->
-        <meta-data
-            android:name="com.startapp.sdk.SPLASH_ENABLED"
-            android:value="false" />
-
-        <!-- Disable Start.io return ads -->
-        <meta-data
-            android:name="com.startapp.sdk.RETURN_ADS_ENABLED"
-            android:value="false" />
-
-        <!-- Disable Start.io built-in consent dialog
-             We handle user privacy disclosure via our own privacy policy
-             and Google Play Data Safety declaration -->
-        <meta-data
-            android:name="com.startapp.sdk.GDPR_CONSENT_SHOWN"
-            android:value="true" />
-
-        <!-- Remove Start.io ContentProvider to prevent auto-init before our code runs -->
-        <provider
-            android:name="com.startapp.sdk.adsbase.StartAppInitProvider"
-            android:authorities="${applicationId}.StartAppInitProvider"
-            tools:node="remove" />
+        <!-- Start.io removed -->
 
         <property
             android:name="android.adservices.AD_SERVICES_CONFIG"

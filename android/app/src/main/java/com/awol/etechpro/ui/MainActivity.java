@@ -42,7 +42,6 @@ import com.awol.etechpro.model.TechTip;
 import com.awol.etechpro.util.InMobiAdsManager;
 import com.awol.etechpro.util.LevelPlayAdsManager;
 import com.awol.etechpro.util.MetaAdsManager;
-import com.awol.etechpro.util.StartioAdsManager;
 import com.awol.etechpro.util.UnityAdsManager;
 
 import android.widget.FrameLayout;
@@ -123,10 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (System.currentTimeMillis() >= adFreeUntil) {
             // Meta banner removed — now handled via LevelPlay mediation
-            // Create Start.io banner using BannerRequest API (has load callbacks)
-            if (startioBannerContainer != null) {
-                StartioAdsManager.loadBanner(this, startioBannerContainer);
-            }
+            // Start.io banner removed
             // Also try Unity — if it loads it will hide Start.io
             if (unityBannerContainer != null) {
                 unityBannerView = UnityAdsManager.createBanner(this, unityBannerContainer);

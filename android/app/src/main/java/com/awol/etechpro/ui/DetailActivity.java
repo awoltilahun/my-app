@@ -30,7 +30,6 @@ import com.awol.etechpro.model.TechTip;
 import com.awol.etechpro.util.InMobiAdsManager;
 import com.awol.etechpro.util.LevelPlayAdsManager;
 import com.awol.etechpro.util.MetaAdsManager;
-import com.awol.etechpro.util.StartioAdsManager;
 import com.awol.etechpro.util.UnityAdsManager;
 
 import java.util.ArrayList;

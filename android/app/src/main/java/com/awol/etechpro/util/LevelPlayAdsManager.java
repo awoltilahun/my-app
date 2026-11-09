@@ -53,7 +53,11 @@ public class LevelPlayAdsManager {
     // ── Initialize — call on main thread ─────────────────────────
 
     public static void initialize(Context context) {
-        if (initialized) return;
+        // Always reset initialized on each call — process may have restarted
+        // while static field retained its value from previous session
+        initialized = false;
+        pendingMrecRequests.clear();
+        pendingFeedBannerRequests.clear();
 
         LevelPlayInitRequest initRequest = new LevelPlayInitRequest.Builder(APP_KEY)
                 .build();
@@ -89,6 +93,20 @@ public class LevelPlayAdsManager {
                         OnMrecLoadedCallback cb = req.length > 3 ?
                                 (OnMrecLoadedCallback) req[3] : null;
                         act.runOnUiThread(() -> loadMrec(act, cont, item, cb));
+                    }
+                }
+                // Load ALL queued feed banner requests
+                if (!pendingFeedBannerRequests.isEmpty()) {
+                    java.util.List<Object[]> pending =
+                            new java.util.ArrayList<>(pendingFeedBannerRequests);
+                    pendingFeedBannerRequests.clear();
+                    for (Object[] req : pending) {
+                        Activity act = (Activity) req[0];
+                        ViewGroup cont = (ViewGroup) req[1];
+                        View item = (View) req[2];
+                        OnFeedBannerLoadedCallback cb = req.length > 3 ?
+                                (OnFeedBannerLoadedCallback) req[3] : null;
+                        act.runOnUiThread(() -> loadFeedBanner(act, cont, item, cb));
                     }
                 }
             }
@@ -218,6 +236,66 @@ public class LevelPlayAdsManager {
             bannerAdView.destroy();
             bannerAdView = null;
         }
+    }
+
+    // ── Feed Banner (between tips in home feed) ───────────────────
+
+    // Queue for feed banner requests before init completes
+    private static final java.util.List<Object[]> pendingFeedBannerRequests =
+            new java.util.ArrayList<>();
+
+    public interface OnFeedBannerLoadedCallback {
+        void onLoaded(android.view.View adView);
+    }
+
+    public static void loadFeedBanner(Activity activity, ViewGroup container,
+            View itemView, OnFeedBannerLoadedCallback callback) {
+        if (!initialized) {
+            Log.d(TAG, "loadFeedBanner queued — waiting for init");
+            pendingFeedBannerRequests.add(
+                    new Object[]{activity, container, itemView, callback});
+            return;
+        }
+        Log.d(TAG, "Feed banner load requested — ad unit: " + AD_UNIT_BANNER);
+
+        LevelPlayBannerAdView feedBannerView =
+                new LevelPlayBannerAdView(activity, AD_UNIT_BANNER);
+
+        feedBannerView.setBannerListener(new LevelPlayBannerAdViewListener() {
+            @Override
+            public void onAdLoaded(@NonNull LevelPlayAdInfo adInfo) {
+                Log.d(TAG, "✅ Feed banner loaded — network: " + adInfo.getAdNetwork());
+                activity.runOnUiThread(() -> {
+                    container.removeAllViews();
+                    container.addView(feedBannerView);
+                    container.setVisibility(View.VISIBLE);
+                    if (itemView != null) itemView.setVisibility(View.VISIBLE);
+                    if (callback != null) callback.onLoaded(feedBannerView);
+                });
+            }
+
+            @Override
+            public void onAdLoadFailed(@NonNull LevelPlayAdError error) {
+                Log.e(TAG, "❌ Feed banner failed: " + error.getErrorMessage());
+                activity.runOnUiThread(() -> {
+                    container.setVisibility(View.GONE);
+                    if (itemView != null) itemView.setVisibility(View.GONE);
+                });
+            }
+
+            @Override
+            public void onAdDisplayed(@NonNull LevelPlayAdInfo adInfo) {}
+            @Override
+            public void onAdClicked(@NonNull LevelPlayAdInfo adInfo) {}
+            @Override
+            public void onAdLeftApplication(@NonNull LevelPlayAdInfo adInfo) {}
+            @Override
+            public void onAdExpanded(@NonNull LevelPlayAdInfo adInfo) {}
+            @Override
+            public void onAdCollapsed(@NonNull LevelPlayAdInfo adInfo) {}
+        });
+
+        feedBannerView.loadAd();
     }
 
     // ── MREC (300x250) ────────────────────────────────────────────

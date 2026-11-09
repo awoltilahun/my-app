@@ -32,8 +32,8 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int VIEW_TYPE_REGULAR   = 1;
     private static final int VIEW_TYPE_AD        = 2;
 
-    // Show MREC after every 3 tips (positions 3, 7, 11, 15 in the mixed list)
-    private static final int AD_INTERVAL = 3;
+    // Show banner after every 5 tips — less intrusive than MREC
+    private static final int AD_INTERVAL = 5;
 
     private Context context;
     private List<TechTip> techTipList;
@@ -100,7 +100,7 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return new FeaturedViewHolder(view);
         } else if (viewType == VIEW_TYPE_AD) {
             View view = LayoutInflater.from(context)
-                    .inflate(R.layout.item_ad_mrec, parent, false);
+                    .inflate(R.layout.item_ad_banner, parent, false);
             return new AdViewHolder(view);
         } else {
             View view = LayoutInflater.from(context)
@@ -133,7 +133,7 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 adHolder.mrecContainer.setVisibility(View.GONE);
                 if (context instanceof Activity) {
                     final int pos = position;
-                    LevelPlayAdsManager.loadMrec((Activity) context,
+                    LevelPlayAdsManager.loadFeedBanner((Activity) context,
                             adHolder.mrecContainer, adHolder.itemView,
                             (adView) -> loadedAdViews.put(pos, adView));
                 }
@@ -286,7 +286,7 @@ public class TechTipAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         AdViewHolder(@NonNull View itemView) {
             super(itemView);
-            mrecContainer = itemView.findViewById(R.id.mrec_ad_container);
+            mrecContainer = itemView.findViewById(R.id.feed_banner_container);
         }
     }
 }
